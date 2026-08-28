@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#24151b">
+  <meta name="description" content="A birthday surprise for makeup artist Sowbhagyalakshmi">
+  <title>For Sowbhagyalakshmi | A Birthday Surprise</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="age.css">
+  <style>
+    .scratch-screen{background:radial-gradient(circle at 15% 18%,rgba(232,201,151,.32),transparent 32%),linear-gradient(145deg,#fff7f0,#f5ddd7);color:var(--ink)}.scratch-content{max-width:650px;text-align:center}.scratch-content .eyebrow{color:var(--wine)}.scratch-content h2{margin-bottom:18px}.scratch-card{position:relative;width:min(100%,430px);height:235px;margin:0 auto;border:8px solid #fff;box-shadow:0 16px 36px rgba(105,45,60,.18);overflow:hidden;background:#fff1dc}.scratch-answer{display:grid;place-items:center;height:100%;color:var(--wine);font:500 78px/1 var(--serif)}.scratch-answer strong{animation:scratch-answer-pop .7s ease-out both}.scratch-card canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}.scratch-hint{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,247,240,.9);font:italic 28px var(--serif);pointer-events:none;text-shadow:0 2px 5px rgba(60,28,30,.25)}.scratch-card.is-revealed canvas{opacity:0;transition:opacity .55s ease}.scratch-card.is-revealed .scratch-hint{opacity:0;transition:opacity .3s}.scratch-instruction{margin:20px 0 6px;color:var(--wine);font:italic 19px var(--serif)}.scratch-progress{color:#806c6e;font-size:10px;letter-spacing:.1em;text-transform:uppercase}.scratch-progress span{color:var(--wine);font-weight:700}.scratch-dialogues{margin-top:20px;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}.scratch-dialogues.is-ready{opacity:1;transform:none}.scratch-dialogue{margin:7px 0;color:var(--wine);font:italic 20px var(--serif)}.scratch-dialogue--second{margin-top:3px}.exact-age-button{width:min(100%,330px);margin-top:13px}.scratch-screen .screen-nav .nav-button:disabled{visibility:visible;opacity:.35;cursor:not-allowed}.scratch-sparkle{position:absolute;z-index:2;color:#fff;pointer-events:none;font-size:22px;text-shadow:0 0 10px #fff,0 0 18px var(--gold);animation:scratch-sparkle-pop 1.2s ease-out var(--sparkle-delay) forwards}@keyframes scratch-answer-pop{from{opacity:0;transform:scale(.65)}60%{transform:scale(1.08)}to{opacity:1;transform:scale(1)}}@keyframes scratch-sparkle-pop{0%{opacity:0;transform:scale(.2) rotate(0)}25%{opacity:1}100%{opacity:0;transform:translateY(-32px) scale(1.4) rotate(90deg)}}@media(max-width:699px){.scratch-card{height:205px}.scratch-answer{font-size:64px}.scratch-instruction{font-size:17px}.scratch-dialogue{font-size:18px}}
+  </style>
+</head>
+<body>
+  <div class="password-gate" id="passwordGate" role="dialog" aria-modal="true">
+    <div class="gate-card">
+      <div class="compact-logo" aria-hidden="true">S</div>
+      <p class="eyebrow">A private beauty note</p>
+      <h1>For the artist<br><em>behind the glow.</em></h1>
+      <p class="gate-copy">This little birthday world is just for you, Sowbhagyalakshmi.</p>
+      <form id="passwordForm" novalidate>
+        <label for="passwordInput">The secret word</label>
+        <div class="password-field"><input id="passwordInput" type="password" autocomplete="off" placeholder="A name close to the heart" aria-describedby="passwordHint"><button type="button" id="togglePassword" aria-label="Show password">&#128065;</button></div>
+        <p class="password-hint" id="passwordHint">Hint: your beautiful name</p>
+        <p class="password-error" id="passwordError" role="alert" hidden>That is not the magic word yet.</p>
+        <button class="button button--dark gate-submit" type="submit">Unlock the surprise <span>&#10024;</span></button>
+      </form>
+      <p class="gate-footer">Made with a little shimmer and lots of love</p>
+    </div>
+    <div class="wrong-password-popup" id="wrongPasswordPopup" role="alertdialog" aria-modal="true" aria-labelledby="wrongPasswordTitle" hidden>
+      <div class="sad-gif" aria-hidden="true"><img src="assets/images/wrong-password-bunny.svg" alt=""></div>
+      <h2 id="wrongPasswordTitle">Oopsie...</h2>
+      <p>That password made me a little sad.</p>
+      <button class="popup-close" id="closeWrongPassword" type="button">Try again <span>&#10024;</span></button>
+    </div>
+  </div>
+
+  <main class="site" id="site" aria-hidden="true">
+    <button class="music-toggle" id="musicToggle" type="button" aria-label="Play birthday music" title="Play or pause music"><span class="music-toggle__icon">&#9835;</span><span class="music-toggle__bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
+    <audio id="birthdayMusic" loop preload="auto" src="assets/music/bgmusic.mp3"></audio>
+    <audio id="wrongPasswordSound" preload="auto" src="assets/music/error.mp3"></audio>
+    <audio id="crackersSound" preload="auto" src="assets/music/crackers.wav"></audio>
+
+    <section class="screen welcome" id="welcome">
+      <div class="screen-content reveal"><p class="eyebrow">A little birthday delivery</p><h2>Happy<br><em>Birthday</em></h2><p class="name-label">SOWBHAGYALAKSHMI <span>&#10084;</span></p><p class="screen-copy">Today is all about the brilliant, kind, creative person who makes every room feel a little brighter.</p></div>
+      <div class="date-mark">01<small>OCT</small></div>
+      <div class="screen-nav"><button class="nav-button" type="button" data-prev disabled><span>&larr;</span> Back</button><span class="screen-count">01 / 07</span><button class="nav-button nav-button--next" type="button" data-next>Begin <span>&rarr;</span></button></div>
+    </section>
+
+    <section class="screen scratch-screen" id="scratch">
+      <div class="screen-content scratch-content reveal">
+        <p class="eyebrow">A tiny birthday secret</p>
+        <h2>Something is<br><em>hidden here...</em></h2>
+        <div class="brush-picker" aria-label="Choose a makeup brush">
+          <button class="brush-choice" type="button" data-brush="blending" aria-label="Choose Blending Brush">
+            <span class="brush-visual brush-visual--blending" aria-hidden="true"><i></i></span><span>Blending Brush</span>
+          </button>
+          <button class="brush-choice" type="button" data-brush="lip" aria-label="Choose Lip Brush">
+            <span class="brush-visual brush-visual--lip" aria-hidden="true"><i></i></span><span>Lip Brush</span>
+          </button>
+          <button class="brush-choice" type="button" data-brush="blush" aria-label="Choose Blush Brush">
+            <span class="brush-visual brush-visual--blush" aria-hidden="true"><i></i></span><span>Blush Brush</span>
+          </button>
+          <button class="brush-choice" type="button" data-brush="highlighter" aria-label="Choose Highlighter Brush">
+            <span class="brush-visual brush-visual--highlighter" aria-hidden="true"><i></i></span><span>Highlighter Brush</span>
+          </button>
+        </div>
+        <div class="brush-message" id="brushMessage" aria-live="polite" hidden>
+          <strong>Perfect choice! &#10024;</strong><span>Use your magic brush to reveal your age...</span>
+        </div>
+        <div class="scratch-card" id="scratchCard">
+          <div class="scratch-answer" aria-live="polite"><strong>22 &#127874;</strong></div>
+          <canvas id="scratchCanvas" aria-label="Scratch this card to reveal the hidden age"></canvas>
+          <span class="scratch-hint">Scratch me</span>
+          <span class="brush-cursor" id="brushCursor" aria-hidden="true"><i></i></span>
+        </div>
+        <p class="scratch-instruction">Scratch it completely to reveal your surprise &#10024;</p>
+        <div class="scratch-progress" aria-live="polite"><span id="scratchPercent">0%</span> revealed</div>
+        <div class="scratch-dialogues" id="scratchDialogues" hidden>
+          <p class="scratch-dialogue scratch-dialogue--first">Hmm... 22? &#128064;</p>
+          <p class="scratch-dialogue scratch-dialogue--second">But is that your EXACT age? &#128521;</p>
+          <button class="button button--dark exact-age-button" id="showExactAge" type="button">REVEAL MY EXACT AGE &#10024;</button>
+        </div>
+      </div>
+      <div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">02 / 08</span><button class="nav-button nav-button--next" id="scratchNext" type="button" data-next disabled>Next screen <span>&rarr;</span></button></div>
+    </section>
+
+    <section class="screen age-screen" id="age">
+      <div class="screen-content age-content reveal">
+        <p class="eyebrow">A little time check</p>
+        <h2>You are<br><em>growing up.</em></h2>
+        <p class="age-intro">Every second is another little piece of the beautiful person you are becoming.</p>
+        <p class="current-date" id="currentDate" aria-live="polite"></p>
+        <div class="age-counter" aria-live="polite">
+          <div class="age-number"><strong id="ageYears">00</strong><span>years</span></div>
+          <div class="age-number"><strong id="ageDays">000</strong><span>days</span></div>
+          <div class="age-number"><strong id="ageHours">00</strong><span>hours</span></div>
+          <div class="age-number"><strong id="ageMinutes">00</strong><span>minutes</span></div>
+          <div class="age-number"><strong id="ageSeconds">00</strong><span>seconds</span></div>
+        </div>
+        <p class="age-dialogue">Look at you... growing up so beautifully.</p>
+      </div>
+      <div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">03 / 08</span><button class="nav-button nav-button--next" type="button" data-next>Next screen <span>&rarr;</span></button></div>
+    </section>
+
+    <section class="screen memories" id="memories">
+      <div class="screen-content content-narrow reveal"><p class="eyebrow">Chapter one</p><h2>A few beautiful<br><em>memories...</em></h2><p class="section-intro">Every lovely moment deserves a little room to glow.</p><div class="memory-viewer"><div class="memory-frame"><div class="memory-fallback" id="memoryFallback"><span>&#10022;</span></div><img id="memoryImage" alt="" hidden></div><div class="memory-meta"><span id="memoryCount">01 / 03</span><span id="memoryCaption">A beautiful memory, waiting to be added</span></div><div class="memory-controls"><button class="circle-button" id="previousMemory" type="button" aria-label="Previous memory">&larr;</button><div class="progress" id="memoryProgress"><button type="button" aria-label="Go to memory 1"></button><button type="button" aria-label="Go to memory 2"></button><button type="button" aria-label="Go to memory 3"></button></div><button class="circle-button" id="nextMemory" type="button" aria-label="Next memory">&rarr;</button></div></div></div>
+      <div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">04 / 08</span><button class="nav-button nav-button--next" type="button" data-next>Next screen <span>&rarr;</span></button></div>
+    </section>
+
+    <section class="screen friendship" id="friendship"><div class="screen-content split-content reveal"><div><p class="eyebrow">Chapter two</p><h2>Some people become<br><em>the story.</em></h2></div><div class="prose"><p class="quote">“Some people enter our lives quietly... and somehow become a beautiful part of our story.”</p><p>You are one of those rare people whose presence makes ordinary days feel brighter. Thank you for the laughter, the support, the tiny memories and all the warmth you bring with you.</p><p>You are not just a friend, SOWBHAGYALAKSHMI. You are someone genuinely special.</p></div></div><div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">05 / 08</span><button class="nav-button nav-button--next" type="button" data-next>Next screen <span>&rarr;</span></button></div></section>
+
+    <section class="screen artist" id="artist"><div class="artist-letter" aria-hidden="true">S</div><div class="screen-content artist-content reveal"><p class="eyebrow">Chapter three</p><h2>Your art.<br>Your passion.<br><em>Your magic.</em> <span>&#10024;</span></h2><p>Makeup is never just about making someone look beautiful. It is confidence, creativity, and the magic of helping someone feel truly special.</p><div class="artist-signature">For the artist who makes the world<br>a little more luminous.</div></div><div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">06 / 08</span><button class="nav-button nav-button--next" type="button" data-next>Next screen <span>&rarr;</span></button></div></section>
+
+    <section class="screen letter" id="letter"><div class="screen-content letter-content reveal"><p class="eyebrow">Chapter four</p><h2>A little something<br><em>from me...</em> <span>&#128140;</span></h2><article class="letter-card"><span class="letter-mark">S</span><p class="letter-date">A note for your birthday</p><p id="letterText" class="letter-text"></p><p class="letter-signoff">With lots of love,<br><strong>Your friend</strong></p></article></div><div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">07 / 08</span><button class="nav-button nav-button--next" type="button" data-next>Final surprise <span>&rarr;</span></button></div></section>
+
+    <section class="screen final" id="final"><div class="screen-content final-content reveal"><p class="eyebrow">The last little secret</p><h2>Wait... there's<br><em>one more thing</em> <span>&#128064;</span></h2><button class="button button--outline" id="revealButton" type="button">Reveal it <span>&#10024;</span></button><div class="final-message" id="finalMessage" hidden><div class="final-photo"><div class="memory-fallback"><span>&#10084;</span></div><img id="finalImage" alt="Sowbhagyalakshmi" hidden></div><p class="eyebrow">Happy birthday, SOWBHAGYALAKSHMI</p><h3>Keep smiling.<br>Keep creating.<br><em>Keep shining.</em></h3><p>May this year bring you everything your heart wishes for.</p></div></div><div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">08 / 08</span><button class="nav-button nav-button--next" type="button" data-next>Start again <span>&rarr;</span></button></div></section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
