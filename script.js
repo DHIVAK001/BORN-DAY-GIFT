@@ -16,6 +16,9 @@ const screens = [...document.querySelectorAll('.screen')];
 const music = document.querySelector('#birthdayMusic');
 const wrongPasswordSound = document.querySelector('#wrongPasswordSound');
 const crackersSound = document.querySelector('#crackersSound');
+const rainSound = document.querySelector('#rainSound');
+const countdownSound = document.querySelector('#countdownSound');
+const typewriterSound = document.querySelector('#typewriterSound');
 const musicToggle = document.querySelector('#musicToggle');
 const memoryImage = document.querySelector('#memoryImage');
 const memoryFallback = document.querySelector('#memoryFallback');
@@ -123,19 +126,68 @@ function stopMusic() {
   musicToggle.setAttribute('aria-label', 'Play birthday music');
 }
 
+// Add event listeners to resume music when sound effects end
+rainSound.addEventListener('ended', () => {
+  if (!countdownSound.paused || !typewriterSound.paused) return;
+  if (music.paused && gate.classList.contains('is-unlocked')) music.play().catch(() => {});
+});
+
+countdownSound.addEventListener('ended', () => {
+  if (!rainSound.paused || !typewriterSound.paused) return;
+  if (music.paused && gate.classList.contains('is-unlocked')) music.play().catch(() => {});
+});
+
+typewriterSound.addEventListener('ended', () => {
+  if (!rainSound.paused || !countdownSound.paused) return;
+  if (music.paused && gate.classList.contains('is-unlocked')) music.play().catch(() => {});
+});
+
 function playWrongPasswordSound() {
   wrongPasswordSound.currentTime = 0;
   wrongPasswordSound.play().catch(() => {});
 }
 
 function showScreen(index) {
+  const previousScreen = screenIndex;
   screenIndex = (index + screens.length) % screens.length;
   screens.forEach((screen, screenNumber) => {
     const active = screenNumber === screenIndex;
     screen.classList.toggle('is-active', active);
     screen.setAttribute('aria-hidden', String(!active));
   });
+  // Stop rain sound when leaving page 0
+  if (previousScreen === 0 && screenIndex !== 0) {
+    rainSound.pause();
+    rainSound.currentTime = 0;
+    if (!countdownSound.paused || !typewriterSound.paused) return;
+    if (!music.paused) music.play().catch(() => {});
+  }
+  // Play rain sound only on page 0 when gate is unlocked
+  if (screenIndex === 0 && !gate.classList.contains('is-unlocked')) {
+    rainSound.pause();
+    rainSound.currentTime = 0;
+  } else if (screenIndex === 0 && gate.classList.contains('is-unlocked')) {
+    music.pause();
+    rainSound.currentTime = 0;
+    rainSound.play().catch(() => {});
+  }
   if (screenIndex === 1) window.requestAnimationFrame(resizeScratchCard);
+  // Stop countdown sound when leaving page 2 (age page)
+  if (previousScreen === 2 && screenIndex !== 2) {
+    countdownSound.pause();
+    countdownSound.currentTime = 0;
+    if (!rainSound.paused || !typewriterSound.paused) return;
+    if (!music.paused) music.play().catch(() => {});
+  }
+  // Play countdown sound only on page 2 (age page) when gate is unlocked
+  if (screenIndex === 2 && gate.classList.contains('is-unlocked')) {
+    music.pause();
+    countdownSound.currentTime = 0;
+    countdownSound.play().catch(() => {});
+  } else if (screenIndex === 2 && !gate.classList.contains('is-unlocked')) {
+    countdownSound.pause();
+    countdownSound.currentTime = 0;
+  }
   if (screenIndex === 5) typeLetter();
 }
 
@@ -267,10 +319,21 @@ function typeLetter() {
   if (target.dataset.typed) return;
   target.dataset.typed = 'true';
   let position = 0;
+  music.pause();
+  typewriterSound.currentTime = 0;
+  typewriterSound.play().catch(() => {});
   const write = () => {
     target.textContent = birthdayLetter.slice(0, position);
     position += 1;
-    if (position <= birthdayLetter.length) window.setTimeout(write, 14);
+    if (position <= birthdayLetter.length) {
+      window.setTimeout(write, 40);
+    } else {
+      // Stop typewriter sound when typing completes and resume music
+      typewriterSound.pause();
+      typewriterSound.currentTime = 0;
+      if (!rainSound.paused || !countdownSound.paused) return;
+      if (!music.paused) music.play().catch(() => {});
+    }
   };
   write();
 }
@@ -348,15 +411,111 @@ musicToggle.addEventListener('click', () => {
 document.querySelector('#previousMemory').addEventListener('click', () => showMemory(memoryIndex - 1));
 document.querySelector('#nextMemory').addEventListener('click', () => showMemory(memoryIndex + 1));
 progressButtons.forEach((button, index) => button.addEventListener('click', () => showMemory(index)));
-document.querySelector('#revealButton').addEventListener('click', (event) => {
-  event.currentTarget.hidden = true;
-  finalMessage.hidden = false;
-  launchConfetti();
-});
+const puzzleCanvas = document.querySelector('#puzzleCanvas');
 
-finalImage.onload = () => { finalImage.hidden = false; finalImage.previousElementSibling.hidden = true; };
-finalImage.onerror = () => { finalImage.hidden = true; finalImage.previousElementSibling.hidden = false; };
-finalImage.src = 'assets/images/final.jpg';
+function createPuzzleAnimation(imageElement) {
+  const canvas = puzzleCanvas;
+  const ctx = canvas.getContext('2d');
+  const photo = document.querySelector('.final-photo');
+  
+  canvas.width = photo.offsetWidth;
+  canvas.height = photo.offsetHeight;
+  canvas.style.display = 'block';
+  
+  const gridCols = 4;
+  const gridRows = 5;
+  const pieceWidth = canvas.width / gridCols;
+  const pieceHeight = canvas.height / gridRows;
+  
+  // Create piece positions array
+  const pieces = [];
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      pieces.push({ col, row, currentCol: col, currentRow: row });
+    }
+  }
+  
+  // Shuffle pieces
+  const shuffled = [...pieces].sort(() => Math.random() - 0.5);
+  shuffled.forEach((piece, i) => {
+    piece.currentCol = pieces[i].col;
+    piece.currentRow = pieces[i].row;
+  });
+  
+  let animationStartTime = null;
+  const animationDuration = 3000; // 3 seconds
+  
+  function drawPuzzle(progress) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    shuffled.forEach(piece => {
+      // Interpolate between current and target position
+      const targetCol = piece.col;
+      const targetRow = piece.row;
+      const col = piece.currentCol + (targetCol - piece.currentCol) * progress;
+      const row = piece.currentRow + (targetRow - piece.currentRow) * progress;
+      
+      const sx = piece.col * pieceWidth;
+      const sy = piece.row * pieceHeight;
+      const dx = col * pieceWidth;
+      const dy = row * pieceHeight;
+      
+      ctx.drawImage(
+        imageElement,
+        sx, sy, pieceWidth, pieceHeight,
+        dx, dy, pieceWidth, pieceHeight
+      );
+    });
+  }
+  
+  function animate(timestamp) {
+    if (!animationStartTime) animationStartTime = timestamp;
+    const elapsed = timestamp - animationStartTime;
+    const progress = Math.min(elapsed / animationDuration, 1);
+    
+    drawPuzzle(progress);
+    
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      // Animation complete, hide canvas and show image
+      canvas.style.opacity = '0';
+      canvas.style.transition = 'opacity 0.5s ease-out';
+      setTimeout(() => {
+        canvas.style.display = 'none';
+        imageElement.hidden = false;
+      }, 500);
+    }
+  }
+  
+  requestAnimationFrame(animate);
+}
+
+finalImage.onerror = () => { finalImage.hidden = true; document.querySelector('.memory-fallback').hidden = false; };
+
+// Reveal button - floating effect + puzzle animation
+document.querySelector('#revealButton').addEventListener('click', function handleRevealClick(event) {
+  if (!event.currentTarget.dataset.attempts) event.currentTarget.dataset.attempts = '0';
+  const attempts = parseInt(event.currentTarget.dataset.attempts);
+  if (attempts < 3) {
+    event.currentTarget.dataset.attempts = String(attempts + 1);
+    const randomX = Math.random() * (window.innerWidth - 150);
+    const randomY = Math.random() * (window.innerHeight - 60) + 60;
+    event.currentTarget.style.position = 'fixed';
+    event.currentTarget.style.left = randomX + 'px';
+    event.currentTarget.style.top = randomY + 'px';
+    event.currentTarget.style.zIndex = '100';
+    event.currentTarget.style.transition = 'all 0.3s ease-out';
+  } else {
+    event.currentTarget.hidden = true;
+    finalMessage.hidden = false;
+    launchConfetti();
+    // Start puzzle if image is already loaded
+    if (finalImage.complete && finalImage.naturalWidth > 0) {
+      createPuzzleAnimation(finalImage);
+    }
+  }
+});
 
 showExactAge.addEventListener('click', () => showScreen(2));
 setupScratchCard();
