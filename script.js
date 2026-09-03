@@ -13,6 +13,11 @@ const passwordError = document.querySelector('#passwordError');
 const wrongPasswordPopup = document.querySelector('#wrongPasswordPopup');
 const closeWrongPassword = document.querySelector('#closeWrongPassword');
 const screens = [...document.querySelectorAll('.screen')];
+screens.forEach((screen, index) => {
+  const counter = screen.querySelector('.screen-count');
+  if (counter) counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(screens.length).padStart(2, '0')}`;
+});
+document.querySelector('#final [data-next]').innerHTML = 'One last thing <span>&rarr;</span>';
 const music = document.querySelector('#birthdayMusic');
 const wrongPasswordSound = document.querySelector('#wrongPasswordSound');
 const crackersSound = document.querySelector('#crackersSound');
@@ -27,8 +32,11 @@ const memoryCount = document.querySelector('#memoryCount');
 const progressButtons = [...document.querySelectorAll('#memoryProgress button')];
 const finalMessage = document.querySelector('#finalMessage');
 const finalImage = document.querySelector('#finalImage');
+const revealButton = document.querySelector('#revealButton');
+const letterText = document.querySelector('#letterText');
 const scratchCard = document.querySelector('#scratchCard');
 const scratchCanvas = document.querySelector('#scratchCanvas');
+const scratchAgeAnswer = document.querySelector('#scratchAgeAnswer');
 const scratchPercent = document.querySelector('#scratchPercent');
 const scratchDialogues = document.querySelector('#scratchDialogues');
 const showExactAge = document.querySelector('#showExactAge');
@@ -36,6 +44,20 @@ const scratchNext = document.querySelector('#scratchNext');
 const brushChoices = [...document.querySelectorAll('.brush-choice')];
 const brushMessage = document.querySelector('#brushMessage');
 const brushCursor = document.querySelector('#brushCursor');
+const creatorIntro = document.querySelector('#creatorIntro');
+const creatorGame = document.querySelector('#creatorGame');
+const creatorVideo = document.querySelector('#creatorVideo');
+const creatorFinal = document.querySelector('#creatorFinal');
+const creatorScreen = document.querySelector('#creatorReveal');
+const creatorGuessButton = document.querySelector('#creatorGuessButton');
+const creatorKeyboard = document.querySelector('#creatorKeyboard');
+const creatorSlots = document.querySelector('#creatorSlots');
+const creatorFeedback = document.querySelector('#creatorFeedback');
+const creatorRestart = document.querySelector('#creatorRestart');
+const birthdayRevealVideo = document.querySelector('#birthdayRevealVideo');
+const dhivakarImage = document.querySelector('#dhivakarImage');
+const creatorPhoto = document.querySelector('.creator-photo');
+const CREATOR_VIDEO_SOURCE = 'assets/video/dhivakar-trial.mp4';
 const ageValues = {
   years: document.querySelector('#ageYears'),
   days: document.querySelector('#ageDays'),
@@ -56,6 +78,18 @@ let isScratching = false;
 let scratchRevealed = false;
 let lastScratchPoint;
 let selectedBrush = null;
+let isTypingLetter = false;
+let letterTypingTimer;
+let finalPhotoRevealTimer;
+let finalRevealRun = 0;
+let creatorProgress = 0;
+let creatorWrongGuesses = 0;
+let creatorAdvanceTimer;
+
+// Screen ambience has priority over the general background track.
+rainSound.loop = true;
+countdownSound.loop = true;
+typewriterSound.loop = true;
 
 function updateAge() {
   const now = new Date();
@@ -126,21 +160,17 @@ function stopMusic() {
   musicToggle.setAttribute('aria-label', 'Play birthday music');
 }
 
-// Add event listeners to resume music when sound effects end
-rainSound.addEventListener('ended', () => {
-  if (!countdownSound.paused || !typewriterSound.paused) return;
-  if (music.paused && gate.classList.contains('is-unlocked')) music.play().catch(() => {});
-});
+function stopScreenSounds() {
+  [rainSound, countdownSound, typewriterSound].forEach((sound) => {
+    sound.pause();
+    sound.currentTime = 0;
+  });
+}
 
-countdownSound.addEventListener('ended', () => {
-  if (!rainSound.paused || !typewriterSound.paused) return;
-  if (music.paused && gate.classList.contains('is-unlocked')) music.play().catch(() => {});
-});
-
-typewriterSound.addEventListener('ended', () => {
-  if (!rainSound.paused || !countdownSound.paused) return;
-  if (music.paused && gate.classList.contains('is-unlocked')) music.play().catch(() => {});
-});
+function resumeBackgroundMusic() {
+  const hasScreenSound = !rainSound.paused || !countdownSound.paused || !typewriterSound.paused;
+  if (gate.classList.contains('is-unlocked') && !hasScreenSound) startMusic();
+}
 
 function playWrongPasswordSound() {
   wrongPasswordSound.currentTime = 0;
@@ -148,47 +178,32 @@ function playWrongPasswordSound() {
 }
 
 function showScreen(index) {
-  const previousScreen = screenIndex;
+  const previousScreenIndex = screenIndex;
   screenIndex = (index + screens.length) % screens.length;
   screens.forEach((screen, screenNumber) => {
     const active = screenNumber === screenIndex;
     screen.classList.toggle('is-active', active);
     screen.setAttribute('aria-hidden', String(!active));
   });
-  // Stop rain sound when leaving page 0
-  if (previousScreen === 0 && screenIndex !== 0) {
-    rainSound.pause();
-    rainSound.currentTime = 0;
-    if (!countdownSound.paused || !typewriterSound.paused) return;
-    if (!music.paused) music.play().catch(() => {});
+  if (previousScreenIndex === screens.length - 1 && screenIndex !== previousScreenIndex) {
+    birthdayRevealVideo.pause();
+    birthdayRevealVideo.currentTime = 0;
   }
-  // Play rain sound only on page 0 when gate is unlocked
-  if (screenIndex === 0 && !gate.classList.contains('is-unlocked')) {
-    rainSound.pause();
-    rainSound.currentTime = 0;
-  } else if (screenIndex === 0 && gate.classList.contains('is-unlocked')) {
-    music.pause();
-    rainSound.currentTime = 0;
-    rainSound.play().catch(() => {});
-  }
+  stopScreenSounds();
   if (screenIndex === 1) window.requestAnimationFrame(resizeScratchCard);
-  // Stop countdown sound when leaving page 2 (age page)
-  if (previousScreen === 2 && screenIndex !== 2) {
-    countdownSound.pause();
-    countdownSound.currentTime = 0;
-    if (!rainSound.paused || !typewriterSound.paused) return;
-    if (!music.paused) music.play().catch(() => {});
-  }
-  // Play countdown sound only on page 2 (age page) when gate is unlocked
-  if (screenIndex === 2 && gate.classList.contains('is-unlocked')) {
-    music.pause();
-    countdownSound.currentTime = 0;
+  if (!gate.classList.contains('is-unlocked')) return;
+
+  if (screenIndex === 0) {
+    stopMusic();
+    rainSound.play().catch(() => {});
+  } else if (screenIndex === 2) {
+    stopMusic();
     countdownSound.play().catch(() => {});
-  } else if (screenIndex === 2 && !gate.classList.contains('is-unlocked')) {
-    countdownSound.pause();
-    countdownSound.currentTime = 0;
+  } else if (screenIndex === 6) {
+    typeLetter();
+  } else {
+    resumeBackgroundMusic();
   }
-  if (screenIndex === 5) typeLetter();
 }
 
 function celebrateScratch() {
@@ -196,13 +211,8 @@ function celebrateScratch() {
   scratchRevealed = true;
   scratchContext.clearRect(0, 0, scratchCanvas.width, scratchCanvas.height);
   scratchPercent.textContent = '100%';
-  scratchCard.classList.add('is-revealed');
-  scratchDialogues.hidden = false;
-  scratchNext.disabled = false;
-  crackersSound.currentTime = 0;
-  crackersSound.play().catch(() => {});
-  launchSparkles();
-  launchConfetti();
+  scratchAgeAnswer.innerHTML = '21 &#127874;';
+  scratchCard.classList.add('is-revealed', 'is-revealing');
 
   function launchSparkles() {
     for (let index = 0; index < 18; index += 1) {
@@ -216,7 +226,18 @@ function celebrateScratch() {
       window.setTimeout(() => sparkle.remove(), 1500);
     }
   }
-  window.setTimeout(() => scratchDialogues.classList.add('is-ready'), 900);
+  window.setTimeout(() => {
+    scratchAgeAnswer.innerHTML = '22 &#127874;';
+    scratchCard.classList.remove('is-revealing');
+    scratchCard.classList.add('is-exact-age');
+    scratchDialogues.hidden = false;
+    scratchNext.disabled = false;
+    crackersSound.currentTime = 0;
+    crackersSound.play().catch(() => {});
+    launchSparkles();
+    launchConfetti();
+    window.requestAnimationFrame(() => scratchDialogues.classList.add('is-ready'));
+  }, 2000);
 }
 
 function updateScratchProgress() {
@@ -316,23 +337,27 @@ function showMemory(index) {
 
 function typeLetter() {
   const target = document.querySelector('#letterText');
-  if (target.dataset.typed) return;
+  if (target.dataset.typed) {
+    resumeBackgroundMusic();
+    return;
+  }
   target.dataset.typed = 'true';
+  isTypingLetter = true;
   let position = 0;
-  music.pause();
+  stopMusic();
   typewriterSound.currentTime = 0;
   typewriterSound.play().catch(() => {});
   const write = () => {
     target.textContent = birthdayLetter.slice(0, position);
     position += 1;
     if (position <= birthdayLetter.length) {
-      window.setTimeout(write, 40);
+      letterTypingTimer = window.setTimeout(write, 40);
     } else {
-      // Stop typewriter sound when typing completes and resume music
+      // The typewriter is exclusive to the letter screen; resume music afterwards.
       typewriterSound.pause();
       typewriterSound.currentTime = 0;
-      if (!rainSound.paused || !countdownSound.paused) return;
-      if (!music.paused) music.play().catch(() => {});
+      isTypingLetter = false;
+      if (screenIndex === 6) resumeBackgroundMusic();
     }
   };
   write();
@@ -388,7 +413,6 @@ passwordForm.addEventListener('submit', (event) => {
   site.setAttribute('aria-hidden', 'false');
   site.classList.add('is-visible');
   showScreen(0);
-  startMusic();
 });
 document.querySelector('#togglePassword').addEventListener('click', (event) => {
   const visible = passwordInput.type === 'text';
@@ -402,123 +426,265 @@ closeWrongPassword.addEventListener('click', () => {
   window.clearTimeout(popupTimer);
   passwordInput.focus();
 });
-document.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => showScreen(screenIndex + 1)));
+document.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => {
+  if (screenIndex === screens.length - 1) {
+    resetBirthdayExperience();
+    showScreen(0);
+    return;
+  }
+  showScreen(screenIndex + 1);
+}));
 document.querySelectorAll('[data-prev]').forEach((button) => button.addEventListener('click', () => showScreen(screenIndex - 1)));
+creatorGuessButton.addEventListener('click', startCreatorGame);
+creatorRestart.addEventListener('click', () => {
+  resetBirthdayExperience();
+  showScreen(0);
+});
+birthdayRevealVideo.addEventListener('ended', finishCreatorVideo);
+dhivakarImage.addEventListener('load', () => creatorPhoto.classList.add('has-image'));
+dhivakarImage.addEventListener('error', () => {
+  dhivakarImage.hidden = true;
+  creatorPhoto.classList.remove('has-image');
+});
 musicToggle.addEventListener('click', () => {
+  if (screenIndex === 0 || screenIndex === 2 || (screenIndex === 6 && isTypingLetter)) return;
   if (!music.paused || generatedMusicTimer) stopMusic();
   else startMusic();
 });
 document.querySelector('#previousMemory').addEventListener('click', () => showMemory(memoryIndex - 1));
 document.querySelector('#nextMemory').addEventListener('click', () => showMemory(memoryIndex + 1));
 progressButtons.forEach((button, index) => button.addEventListener('click', () => showMemory(index)));
-const puzzleCanvas = document.querySelector('#puzzleCanvas');
-
-function createPuzzleAnimation(imageElement) {
-  const canvas = puzzleCanvas;
-  const ctx = canvas.getContext('2d');
-  const photo = document.querySelector('.final-photo');
-  
-  canvas.width = photo.offsetWidth;
-  canvas.height = photo.offsetHeight;
-  canvas.style.display = 'block';
-  
-  const gridCols = 4;
-  const gridRows = 5;
-  const pieceWidth = canvas.width / gridCols;
-  const pieceHeight = canvas.height / gridRows;
-  
-  // Create piece positions array
-  const pieces = [];
-  for (let row = 0; row < gridRows; row++) {
-    for (let col = 0; col < gridCols; col++) {
-      pieces.push({ col, row, currentCol: col, currentRow: row });
-    }
-  }
-  
-  // Shuffle pieces
-  const shuffled = [...pieces].sort(() => Math.random() - 0.5);
-  shuffled.forEach((piece, i) => {
-    piece.currentCol = pieces[i].col;
-    piece.currentRow = pieces[i].row;
-  });
-  
-  let animationStartTime = null;
-  const animationDuration = 3000; // 3 seconds
-  
-  function drawPuzzle(progress) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    shuffled.forEach(piece => {
-      // Interpolate between current and target position
-      const targetCol = piece.col;
-      const targetRow = piece.row;
-      const col = piece.currentCol + (targetCol - piece.currentCol) * progress;
-      const row = piece.currentRow + (targetRow - piece.currentRow) * progress;
-      
-      const sx = piece.col * pieceWidth;
-      const sy = piece.row * pieceHeight;
-      const dx = col * pieceWidth;
-      const dy = row * pieceHeight;
-      
-      ctx.drawImage(
-        imageElement,
-        sx, sy, pieceWidth, pieceHeight,
-        dx, dy, pieceWidth, pieceHeight
-      );
-    });
-  }
-  
-  function animate(timestamp) {
-    if (!animationStartTime) animationStartTime = timestamp;
-    const elapsed = timestamp - animationStartTime;
-    const progress = Math.min(elapsed / animationDuration, 1);
-    
-    drawPuzzle(progress);
-    
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      // Animation complete, hide canvas and show image
-      canvas.style.opacity = '0';
-      canvas.style.transition = 'opacity 0.5s ease-out';
-      setTimeout(() => {
-        canvas.style.display = 'none';
-        imageElement.hidden = false;
-      }, 500);
-    }
-  }
-  
-  requestAnimationFrame(animate);
-}
-
 finalImage.onerror = () => { finalImage.hidden = true; document.querySelector('.memory-fallback').hidden = false; };
 
 // Reveal button - floating effect + puzzle animation
-document.querySelector('#revealButton').addEventListener('click', function handleRevealClick(event) {
+revealButton.addEventListener('click', function handleRevealClick(event) {
   if (!event.currentTarget.dataset.attempts) event.currentTarget.dataset.attempts = '0';
   const attempts = parseInt(event.currentTarget.dataset.attempts);
   if (attempts < 3) {
     event.currentTarget.dataset.attempts = String(attempts + 1);
-    const randomX = Math.random() * (window.innerWidth - 150);
-    const randomY = Math.random() * (window.innerHeight - 60) + 60;
+    const teaseMessages = ['Catch me first! &#10024;', 'Almost... &#128064;', 'One last try! &#10024;'];
+    const buttonWidth = event.currentTarget.offsetWidth || 150;
+    const buttonHeight = event.currentTarget.offsetHeight || 60;
+    const padding = 24;
+    const randomX = padding + Math.random() * Math.max(0, window.innerWidth - buttonWidth - (padding * 2));
+    const randomY = 80 + Math.random() * Math.max(0, window.innerHeight - buttonHeight - 170);
     event.currentTarget.style.position = 'fixed';
     event.currentTarget.style.left = randomX + 'px';
     event.currentTarget.style.top = randomY + 'px';
     event.currentTarget.style.zIndex = '100';
-    event.currentTarget.style.transition = 'all 0.3s ease-out';
+    event.currentTarget.style.setProperty('--tease-rotation', `${(Math.random() * 16) - 8}deg`);
+    event.currentTarget.innerHTML = teaseMessages[attempts];
+    event.currentTarget.classList.remove('reveal-button--teasing');
+    void event.currentTarget.offsetWidth;
+    event.currentTarget.classList.add('reveal-button--teasing');
   } else {
     event.currentTarget.hidden = true;
     finalMessage.hidden = false;
     launchConfetti();
-    // Start puzzle if image is already loaded
-    if (finalImage.complete && finalImage.naturalWidth > 0) {
-      createPuzzleAnimation(finalImage);
-    }
+    releaseBlueButterflies();
   }
 });
 
+function releaseBlueButterflies() {
+  const revealRun = ++finalRevealRun;
+  finalImage.hidden = true;
+  finalImage.classList.remove('is-arriving');
+  const photoBounds = document.querySelector('.final-photo').getBoundingClientRect();
+  const destinationX = photoBounds.left + (photoBounds.width / 2);
+  const destinationY = photoBounds.top + (photoBounds.height / 2);
+
+  for (let index = 0; index < 18; index += 1) {
+    const butterfly = document.createElement('span');
+    const startX = Math.random() * window.innerWidth;
+    const startY = 20 + Math.random() * (window.innerHeight * .75);
+    butterfly.className = 'blue-butterfly';
+    butterfly.textContent = '\u{1F98B}';
+    butterfly.style.left = `${startX}px`;
+    butterfly.style.top = `${startY}px`;
+    butterfly.style.setProperty('--fly-x', `${destinationX - startX + ((Math.random() - .5) * 160)}px`);
+    butterfly.style.setProperty('--fly-y', `${destinationY - startY + ((Math.random() - .5) * 130)}px`);
+    butterfly.style.setProperty('--butterfly-delay', `${Math.random() * 380}ms`);
+    butterfly.style.setProperty('--butterfly-size', `${22 + Math.random() * 18}px`);
+    document.body.append(butterfly);
+    window.setTimeout(() => butterfly.remove(), 2300);
+  }
+
+  const showPhoto = () => {
+    if (revealRun !== finalRevealRun) return;
+    finalImage.hidden = false;
+    finalImage.classList.remove('is-arriving');
+    void finalImage.offsetWidth;
+    finalImage.classList.add('is-arriving');
+  };
+  finalPhotoRevealTimer = window.setTimeout(() => {
+    if (finalImage.complete && finalImage.naturalWidth > 0) showPhoto();
+    else finalImage.addEventListener('load', showPhoto, { once: true });
+  }, 1350);
+}
+
+function shuffleLetters(letters) {
+  const shuffled = [...letters];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function buildCreatorGame() {
+  const answer = 'DHIVAKAR';
+  creatorSlots.innerHTML = '';
+  creatorKeyboard.innerHTML = '';
+  [...answer].forEach(() => {
+    const slot = document.createElement('span');
+    slot.className = 'creator-slot';
+    slot.textContent = '_';
+    creatorSlots.append(slot);
+  });
+  shuffleLetters('ABCDEFGHIJKLMNOPQRSTUVWXYZ').forEach((letter) => {
+    const key = document.createElement('button');
+    key.type = 'button';
+    key.className = 'creator-key';
+    key.textContent = letter;
+    key.setAttribute('aria-label', `Letter ${letter}`);
+    key.addEventListener('click', () => chooseCreatorLetter(letter, key));
+    creatorKeyboard.append(key);
+  });
+}
+
+function chooseCreatorLetter(letter, key) {
+  const answer = 'DHIVAKAR';
+  if (letter === answer[creatorProgress]) {
+    const slot = creatorSlots.children[creatorProgress];
+    slot.textContent = letter;
+    slot.classList.add('is-filled');
+    // Keep a repeated letter available until every occurrence has been used.
+    if (answer.indexOf(letter, creatorProgress + 1) === -1) key.classList.add('is-correct');
+    creatorProgress += 1;
+    creatorFeedback.textContent = creatorProgress === answer.length ? 'Okay... now you know. 👀' : 'Correct. Keep going...';
+    if (creatorProgress === answer.length) {
+      creatorKeyboard.querySelectorAll('button').forEach((button) => { button.disabled = true; });
+      creatorAdvanceTimer = window.setTimeout(startCreatorVideo, 900);
+    }
+    return;
+  }
+
+  creatorWrongGuesses += 1;
+  const funnyMessages = [
+    'Hmm... are you sure? 👀',
+    'Come on... you know this person! 😂',
+    'This person literally made you an entire website.',
+    'THE AUDACITY 😭'
+  ];
+  creatorFeedback.textContent = funnyMessages[Math.min(creatorWrongGuesses - 1, funnyMessages.length - 1)];
+  key.classList.remove('is-wrong');
+  void key.offsetWidth;
+  key.classList.add('is-wrong');
+}
+
+function startCreatorGame() {
+  creatorIntro.hidden = true;
+  creatorGame.hidden = false;
+  creatorProgress = 0;
+  creatorWrongGuesses = 0;
+  creatorFeedback.textContent = 'The keyboard is deliberately unhelpful.';
+  buildCreatorGame();
+}
+
+function startCreatorVideo() {
+  creatorGame.hidden = true;
+  creatorScreen.classList.add('is-transitioning');
+  stopMusic();
+  creatorAdvanceTimer = window.setTimeout(() => {
+    creatorVideo.hidden = false;
+    creatorScreen.classList.remove('is-transitioning');
+    creatorScreen.classList.add('is-playing-video');
+    birthdayRevealVideo.src = CREATOR_VIDEO_SOURCE;
+    birthdayRevealVideo.currentTime = 0;
+    birthdayRevealVideo.play().catch(() => {});
+  }, 520);
+}
+
+function finishCreatorVideo() {
+  if (creatorVideo.hidden) return;
+  creatorScreen.classList.remove('is-playing-video');
+  creatorScreen.classList.add('is-transitioning');
+  birthdayRevealVideo.pause();
+  creatorAdvanceTimer = window.setTimeout(() => {
+    creatorVideo.hidden = true;
+    creatorScreen.classList.remove('is-transitioning');
+    showCreatorFinal();
+  }, 520);
+}
+
+function showCreatorFinal() {
+  creatorVideo.hidden = true;
+  creatorFinal.hidden = false;
+  creatorRestart.hidden = false;
+  resumeBackgroundMusic();
+}
+
+function resetCreatorReveal() {
+  window.clearTimeout(creatorAdvanceTimer);
+  birthdayRevealVideo.pause();
+  birthdayRevealVideo.currentTime = 0;
+  birthdayRevealVideo.removeAttribute('src');
+  birthdayRevealVideo.load();
+  creatorProgress = 0;
+  creatorWrongGuesses = 0;
+  creatorIntro.hidden = false;
+  creatorGame.hidden = true;
+  creatorVideo.hidden = true;
+  creatorFinal.hidden = true;
+  creatorRestart.hidden = true;
+  creatorSlots.innerHTML = '';
+  creatorKeyboard.innerHTML = '';
+  creatorScreen.classList.remove('is-transitioning', 'is-playing-video');
+}
+
+function resetBirthdayExperience() {
+  window.clearTimeout(letterTypingTimer);
+  window.clearTimeout(finalPhotoRevealTimer);
+  finalRevealRun += 1;
+  stopScreenSounds();
+  stopMusic();
+
+  scratchRevealed = false;
+  isScratching = false;
+  lastScratchPoint = null;
+  selectedBrush = null;
+  scratchCard.classList.remove('is-revealed', 'is-revealing', 'is-exact-age');
+  delete scratchCard.dataset.brush;
+  scratchAgeAnswer.innerHTML = '21 &#127874;';
+  scratchPercent.textContent = '0%';
+  scratchDialogues.classList.remove('is-ready');
+  scratchDialogues.hidden = true;
+  scratchNext.disabled = true;
+  brushMessage.hidden = true;
+  brushCursor.hidden = true;
+  brushChoices.forEach((choice) => choice.classList.remove('is-selected'));
+  resizeScratchCard();
+
+  isTypingLetter = false;
+  delete letterText.dataset.typed;
+  letterText.textContent = '';
+  showMemory(0);
+
+  revealButton.hidden = false;
+  delete revealButton.dataset.attempts;
+  revealButton.innerHTML = 'Reveal it <span>&#10024;</span>';
+  revealButton.classList.remove('reveal-button--teasing');
+  revealButton.removeAttribute('style');
+  finalMessage.hidden = true;
+  finalImage.hidden = true;
+  finalImage.classList.remove('is-arriving');
+  document.querySelectorAll('.confetti-piece, .scratch-sparkle, .blue-butterfly').forEach((element) => element.remove());
+  resetCreatorReveal();
+}
+
 showExactAge.addEventListener('click', () => showScreen(2));
 setupScratchCard();
+resetCreatorReveal();
 
 showScreen(0);
 showMemory(0);
