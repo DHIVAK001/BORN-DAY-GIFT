@@ -54,14 +54,39 @@
     <audio id="countdownSound" preload="auto" src="assets/music/countdown.mp3"></audio>
     <audio id="typewriterSound" preload="auto" src="assets/music/typewriter.mp3"></audio>
 
-    <section class="screen welcome" id="welcome">
-      <video class="welcome-video" autoplay muted loop playsinline aria-hidden="true">
-        <source src="assets/video/backgroundvideo2.mp4" type="video/mp4">
-      </video>
-      <div class="screen-content reveal"><p class="eyebrow">A little birthday delivery</p><h2>Happy<br><em>Birthday</em></h2><p class="name-label">SOWBHAGYALAKSHMI <span>&#10084;</span></p><p class="screen-copy">Today is all about the brilliant, kind, creative person who makes every room feel a little brighter.</p></div>
-      <div class="date-mark">01<small>OCT</small></div>
-      <div class="screen-nav"><button class="nav-button" type="button" data-prev disabled><span>&larr;</span> Back</button><span class="screen-count">01 / 07</span><button class="nav-button nav-button--next" type="button" data-next>Begin <span>&rarr;</span></button></div>
-    </section>
+ <section class="screen welcome" id="welcome">
+  <video class="welcome-video" autoplay muted loop playsinline aria-hidden="true">
+    <source src="assets/video/backgroundvideo2.mp4" type="video/mp4">
+  </video>
+
+  <div class="screen-content reveal">
+   <p class="eyebrow">A little birthday<br>delivery</p>
+    <h2>Happy<br><em>Birthday</em></h2>
+    <p class="name-label">SOWBHAGYALAKSHMI <span>&#10084;</span></p>
+    <p class="screen-copy">
+      Today is all about the brilliant, kind, creative person who makes every room feel a little brighter.
+    </p>
+  </div>
+
+  <!-- Birthday girl photo -->
+  <div class="birthday-photo">
+    <img src="assets/images/sowbhagya.jpg" alt="Sowbhagyalakshmi">
+  </div>
+
+  <div class="date-mark">01<small>OCT</small></div>
+
+  <div class="screen-nav">
+    <button class="nav-button" type="button" data-prev disabled>
+      <span>&larr;</span> Back
+    </button>
+
+    <span class="screen-count">01 / 07</span>
+
+    <button class="nav-button nav-button--next" type="button" data-next>
+      Begin <span>&rarr;</span>
+    </button>
+  </div>
+</section>
 
     <section class="screen screen--butterflies scratch-screen" id="scratch">
       <div class="screen-content scratch-content reveal">
@@ -144,7 +169,7 @@
           <div class="creator-video-note" id="creatorVideoNote"><p>Just before you go...</p><strong>A Small Video<br><em>Note For U</em></strong><span>&#10024;</span></div><div class="birthday-video-wrap" id="birthdayVideoWrap" hidden><video id="birthdayRevealVideo" playsinline preload="metadata" aria-label="Birthday video reveal"></video><p class="birthday-video-placeholder">Add your birthday video at<br><code>assets/video/dhivakar-trial.mp4</code></p></div>
         </div>
         <div class="creator-stage creator-final" id="creatorFinal" hidden>
-          <div class="creator-photo"><img id="dhivakarImage" src="assets/dhivakar.jpg" alt="Dhivakar"></div><p class="creator-name">DHIVAKAR</p><p class="creator-role">Creator of this madness.</p><p class="creator-signoff">Because buying a normal birthday gift was apparently too easy.</p>
+          <div class="creator-photo"><img id="dhivakarImage" src="assets/images/dhivakar.jpg" alt="Dhivakar"></div><p class="creator-name">DHIVAKAR</p><p class="creator-role">Creator of this madness.</p><p class="creator-signoff">Because buying a normal birthday gift was apparently too easy.</p>
         </div>
       </div>
       <div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">09 / 09</span><button class="nav-button nav-button--next" id="creatorRestart" type="button">Start again <span>&rarr;</span></button></div>
