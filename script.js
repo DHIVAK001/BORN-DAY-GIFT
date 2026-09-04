@@ -47,6 +47,8 @@ const brushCursor = document.querySelector('#brushCursor');
 const creatorIntro = document.querySelector('#creatorIntro');
 const creatorGame = document.querySelector('#creatorGame');
 const creatorVideo = document.querySelector('#creatorVideo');
+const creatorVideoNote = document.querySelector('#creatorVideoNote');
+const birthdayVideoWrap = document.querySelector('#birthdayVideoWrap');
 const creatorFinal = document.querySelector('#creatorFinal');
 const creatorScreen = document.querySelector('#creatorReveal');
 const creatorGuessButton = document.querySelector('#creatorGuessButton');
@@ -186,8 +188,7 @@ function showScreen(index) {
     screen.setAttribute('aria-hidden', String(!active));
   });
   if (previousScreenIndex === screens.length - 1 && screenIndex !== previousScreenIndex) {
-    birthdayRevealVideo.pause();
-    birthdayRevealVideo.currentTime = 0;
+    resetCreatorReveal();
   }
   stopScreenSounds();
   if (screenIndex === 1) window.requestAnimationFrame(resizeScratchCard);
@@ -599,9 +600,15 @@ function startCreatorVideo() {
     creatorVideo.hidden = false;
     creatorScreen.classList.remove('is-transitioning');
     creatorScreen.classList.add('is-playing-video');
-    birthdayRevealVideo.src = CREATOR_VIDEO_SOURCE;
-    birthdayRevealVideo.currentTime = 0;
-    birthdayRevealVideo.play().catch(() => {});
+    creatorVideoNote.hidden = false;
+    birthdayVideoWrap.hidden = true;
+    creatorAdvanceTimer = window.setTimeout(() => {
+      creatorVideoNote.hidden = true;
+      birthdayVideoWrap.hidden = false;
+      birthdayRevealVideo.src = CREATOR_VIDEO_SOURCE;
+      birthdayRevealVideo.currentTime = 0;
+      birthdayRevealVideo.play().catch(() => {});
+    }, 1800);
   }, 520);
 }
 
@@ -635,6 +642,8 @@ function resetCreatorReveal() {
   creatorIntro.hidden = false;
   creatorGame.hidden = true;
   creatorVideo.hidden = true;
+  creatorVideoNote.hidden = false;
+  birthdayVideoWrap.hidden = true;
   creatorFinal.hidden = true;
   creatorRestart.hidden = true;
   creatorSlots.innerHTML = '';
