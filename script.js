@@ -48,6 +48,7 @@ const creatorIntro = document.querySelector('#creatorIntro');
 const creatorGame = document.querySelector('#creatorGame');
 const creatorVideo = document.querySelector('#creatorVideo');
 const creatorVideoNote = document.querySelector('#creatorVideoNote');
+
 const birthdayVideoWrap = document.querySelector('#birthdayVideoWrap');
 const creatorFinal = document.querySelector('#creatorFinal');
 const creatorScreen = document.querySelector('#creatorReveal');
