@@ -728,23 +728,46 @@ window.setInterval(updateAge, 1000);
 
     /* UPDATE CLOCK VISUAL */
 
-    function updateClock() {
+function updateClock() {
 
-        // Hour hand rotation
-        const hourRotation =
-            ((selectedHour % 12) * 30) +
-            (selectedMinute * 0.5);
+    // Hour hand rotation
+    const hourRotation =
+        ((selectedHour % 12) * 30) +
+        (selectedMinute * 0.5);
 
-        // Minute hand rotation
-        const minuteRotation =
-            selectedMinute * 6;
+    // Minute hand rotation
+    const minuteRotation =
+        selectedMinute * 6;
 
-        hourHand.style.transform =
-            `translateX(-50%) rotate(${hourRotation}deg)`;
+    hourHand.style.transform =
+        `translateX(-50%) rotate(${hourRotation}deg)`;
 
-        minuteHand.style.transform =
-            `translateX(-50%) rotate(${minuteRotation}deg)`;
-    }
+    minuteHand.style.transform =
+        `translateX(-50%) rotate(${minuteRotation}deg)`;
+
+
+    /* UPDATE DIGITAL TIME */
+
+    const digitalHour =
+        document.getElementById("digitalHour");
+
+    const digitalMinute =
+        document.getElementById("digitalMinute");
+
+    const digitalPeriod =
+        document.getElementById("digitalPeriod");
+
+
+    digitalHour.textContent =
+        String(selectedHour).padStart(2, "0");
+
+    digitalMinute.textContent =
+        String(selectedMinute).padStart(2, "0");
+
+    digitalPeriod.textContent =
+        selectedPeriod;
+
+}
 
 
     /* GET ANGLE FROM FINGER / MOUSE */
@@ -895,22 +918,32 @@ window.setInterval(updateAge, 1000);
         const correctPeriod = "AM";
 
 
-        if (
-            selectedHour === correctHour &&
-            selectedMinute === correctMinute &&
-            selectedPeriod === correctPeriod
-        ) {
+if (
+    selectedHour === correctHour &&
+    selectedMinute === correctMinute &&
+    selectedPeriod === correctPeriod
+) {
 
-            feedback.innerHTML =
-                "✨ Correct! 08:25 AM... and a beautiful story began.";
+    feedback.innerHTML =
+        "✨ Correct! 08:25 AM... and a beautiful story began.";
 
-            birthTimeScreen.classList.add("is-correct");
+    birthTimeScreen.classList.add("is-correct");
 
-            nextButton.disabled = false;
+    // Enable next button
+    nextButton.disabled = false;
 
-            checkButton.style.display = "none";
+    // Hide check button
+    checkButton.style.display = "none";
 
-        } else {
+
+    // Automatically move to next screen
+    setTimeout(function () {
+
+        nextButton.click();
+
+    }, 2000);
+
+}else {
 
             feedback.innerHTML =
                 "Hmm... not quite! Try remembering the exact moment your story began 😏";

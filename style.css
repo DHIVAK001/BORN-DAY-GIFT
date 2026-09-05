@@ -366,3 +366,52 @@
         font-size: 14px;
     }
 }
+/* LIVE DIGITAL CLOCK */
+
+.digital-time-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    margin: 12px auto 22px;
+    font-family: Georgia, serif;
+    color: var(--ink);
+    letter-spacing: 2px;
+}
+
+.digital-time-display span {
+    display: inline-block;
+}
+
+#digitalHour,
+#digitalMinute {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.time-colon {
+    font-size: 30px;
+    opacity: 0.65;
+    animation: blinkColon 1s infinite;
+}
+
+.digital-period {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-left: 5px;
+    color: var(--rose);
+}
+
+@keyframes blinkColon {
+
+    0%, 100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+}
