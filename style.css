@@ -415,3 +415,30 @@
     }
 
 }
+/* =========================================
+   SCREEN 09 FINAL - MOBILE NAVIGATION FIX
+========================================= */
+
+#final {
+    display: flex;
+    flex-direction: column;
+    height: 100svh;
+    min-height: 100svh;
+    overflow-y: auto;
+}
+
+#final .final-content {
+    flex: 1;
+    padding-bottom: 40px;
+}
+
+#final .screen-nav {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin-top: auto;
+    flex-shrink: 0;
+    z-index: 50;
+    background: transparent;
+}
