@@ -699,3 +699,238 @@ showScreen(0);
 showMemory(0);
 updateAge();
 window.setInterval(updateAge, 1000);
+
+/* =========================================
+   BIRTH TIME CHALLENGE
+========================================= */
+
+(function () {
+
+    const clock = document.getElementById("analogClock");
+    const hourHand = document.getElementById("hourHand");
+    const minuteHand = document.getElementById("minuteHand");
+
+    const ampmButtons = document.querySelectorAll(".ampm-button");
+
+    const checkButton = document.getElementById("checkBirthTime");
+    const feedback = document.getElementById("birthTimeFeedback");
+    const nextButton = document.getElementById("birthTimeNext");
+    const birthTimeScreen = document.getElementById("birthTime");
+
+    // Current selected time
+    let selectedHour = 12;
+    let selectedMinute = 0;
+    let selectedPeriod = "AM";
+
+    // Which hand is being dragged
+    let draggingHand = null;
+
+
+    /* UPDATE CLOCK VISUAL */
+
+    function updateClock() {
+
+        // Hour hand rotation
+        const hourRotation =
+            ((selectedHour % 12) * 30) +
+            (selectedMinute * 0.5);
+
+        // Minute hand rotation
+        const minuteRotation =
+            selectedMinute * 6;
+
+        hourHand.style.transform =
+            `translateX(-50%) rotate(${hourRotation}deg)`;
+
+        minuteHand.style.transform =
+            `translateX(-50%) rotate(${minuteRotation}deg)`;
+    }
+
+
+    /* GET ANGLE FROM FINGER / MOUSE */
+
+    function getClockAngle(event) {
+
+        const rect = clock.getBoundingClientRect();
+
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        let clientX;
+        let clientY;
+
+        if (event.touches && event.touches.length > 0) {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        } else {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+
+        const deltaX = clientX - centerX;
+        const deltaY = clientY - centerY;
+
+        let angle =
+            Math.atan2(deltaY, deltaX) *
+            180 / Math.PI;
+
+        angle += 90;
+
+        if (angle < 0) {
+            angle += 360;
+        }
+
+        return angle;
+    }
+
+
+    /* START DRAGGING */
+
+    hourHand.addEventListener("pointerdown", function (event) {
+
+        draggingHand = "hour";
+
+        hourHand.setPointerCapture(event.pointerId);
+
+        event.preventDefault();
+    });
+
+
+    minuteHand.addEventListener("pointerdown", function (event) {
+
+        draggingHand = "minute";
+
+        minuteHand.setPointerCapture(event.pointerId);
+
+        event.preventDefault();
+    });
+
+
+    /* MOVE HAND */
+
+    clock.addEventListener("pointermove", function (event) {
+
+        if (!draggingHand) return;
+
+        const angle = getClockAngle(event);
+
+        if (draggingHand === "minute") {
+
+            let minute = Math.round(angle / 6);
+
+            if (minute === 60) {
+                minute = 0;
+            }
+
+            selectedMinute = minute;
+
+        }
+
+
+        if (draggingHand === "hour") {
+
+            let hour = Math.round(angle / 30);
+
+            if (hour === 0) {
+                hour = 12;
+            }
+
+            selectedHour = hour;
+
+        }
+
+        updateClock();
+    });
+
+
+    /* STOP DRAGGING */
+
+    clock.addEventListener("pointerup", function () {
+
+        draggingHand = null;
+
+    });
+
+
+    clock.addEventListener("pointercancel", function () {
+
+        draggingHand = null;
+
+    });
+
+
+    /* AM / PM BUTTON */
+
+    ampmButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            selectedPeriod =
+                button.dataset.period;
+
+            ampmButtons.forEach(function (btn) {
+
+                btn.classList.remove("active");
+
+            });
+
+            button.classList.add("active");
+
+        });
+
+    });
+
+
+    /* CHECK ANSWER */
+
+    checkButton.addEventListener("click", function () {
+
+        /*
+          SECRET CORRECT TIME
+          08:25 AM
+        */
+
+        const correctHour = 8;
+        const correctMinute = 25;
+        const correctPeriod = "AM";
+
+
+        if (
+            selectedHour === correctHour &&
+            selectedMinute === correctMinute &&
+            selectedPeriod === correctPeriod
+        ) {
+
+            feedback.innerHTML =
+                "✨ Correct! 08:25 AM... and a beautiful story began.";
+
+            birthTimeScreen.classList.add("is-correct");
+
+            nextButton.disabled = false;
+
+            checkButton.style.display = "none";
+
+        } else {
+
+            feedback.innerHTML =
+                "Hmm... not quite! Try remembering the exact moment your story began 😏";
+
+            feedback.style.animation = "none";
+
+            setTimeout(function () {
+
+                feedback.style.animation =
+                    "clockShake .4s ease";
+
+            }, 10);
+
+        }
+
+    });
+
+
+    /* INITIAL CLOCK POSITION */
+
+    updateClock();
+
+})();

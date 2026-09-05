@@ -125,7 +125,76 @@
       </div>
       <div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">02 / 08</span><button class="nav-button nav-button--next" id="scratchNext" type="button" data-next disabled>Next screen <span>&rarr;</span></button></div>
     </section>
+    <!-- BIRTH TIME CHALLENGE -->
+<section class="screen birth-time-screen" id="birthTime">
 
+  <div class="screen-content birth-time-content reveal">
+
+    <p class="eyebrow">The moment it all began</p>
+
+    <h2>What time did<br><em>the story begin?</em></h2>
+
+    <p class="birth-time-intro">
+      Set the clock to the exact moment you entered this world.
+    </p>
+
+    <div class="clock-wrapper">
+
+      <div class="analog-clock" id="analogClock">
+
+        <div class="clock-number number-12">12</div>
+        <div class="clock-number number-1">1</div>
+        <div class="clock-number number-2">2</div>
+        <div class="clock-number number-3">3</div>
+        <div class="clock-number number-4">4</div>
+        <div class="clock-number number-5">5</div>
+        <div class="clock-number number-6">6</div>
+        <div class="clock-number number-7">7</div>
+        <div class="clock-number number-8">8</div>
+        <div class="clock-number number-9">9</div>
+        <div class="clock-number number-10">10</div>
+        <div class="clock-number number-11">11</div>
+
+        <div class="clock-hand hour-hand" id="hourHand"></div>
+        <div class="clock-hand minute-hand" id="minuteHand"></div>
+
+        <div class="clock-center"></div>
+
+      </div>
+
+    </div>
+
+    <p class="clock-instruction">
+      Drag the clock hands to set your birth time
+    </p>
+
+    <div class="ampm-selector">
+      <button type="button" class="ampm-button active" data-period="AM">AM</button>
+      <button type="button" class="ampm-button" data-period="PM">PM</button>
+    </div>
+
+    <button type="button" class="button button--dark birth-time-submit" id="checkBirthTime">
+      LOCK MY ANSWER →
+    </button>
+
+    <p class="birth-time-feedback" id="birthTimeFeedback"></p>
+
+  </div>
+
+  <div class="screen-nav">
+    <button class="nav-button" type="button" data-prev>
+      <span>&larr;</span> Previous
+    </button>
+
+    <span class="screen-count">03 / 09</span>
+
+    <button class="nav-button nav-button--next" id="birthTimeNext" type="button" data-next disabled>
+      Next screen <span>&rarr;</span>
+    </button>
+  </div>
+
+</section>
+ <!-- AGE CALCULATOR -->
     <section class="screen screen--powder-cloud age-screen" id="age">
       <div class="screen-content age-content reveal">
         <p class="eyebrow">A little time check</p>
