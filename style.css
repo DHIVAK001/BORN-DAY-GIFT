@@ -1168,3 +1168,10 @@ section#creatorReveal .screen-nav {
 #memories .screen-nav {
     z-index: 100 !important;
 }
+#memories {
+    overflow: visible !important;
+}
+
+#memories .screen-content {
+    overflow: visible !important;
+}
