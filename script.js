@@ -1044,3 +1044,39 @@ if (pageScrollButton) {
   });
 
 }
+function updateScrollButton() {
+
+  const activeScreen = document.querySelector('.screen.is-active');
+
+  if (!activeScreen || !pageScrollButton) return;
+
+  const maxScroll = activeScreen.scrollHeight - activeScreen.clientHeight;
+
+  // No scrolling needed
+  if (maxScroll <= 20) {
+    pageScrollButton.style.display = 'none';
+    return;
+  }
+
+  pageScrollButton.style.display = 'flex';
+
+  // At bottom
+  if (activeScreen.scrollTop >= maxScroll - 20) {
+
+    pageScrollButton.innerHTML = '↑';
+    pageScrollButton.setAttribute('aria-label', 'Scroll to top');
+
+  } else {
+
+    pageScrollButton.innerHTML = '↓';
+    pageScrollButton.setAttribute('aria-label', 'Scroll down');
+
+  }
+
+}
+
+// Detect scrolling
+document.addEventListener('scroll', updateScrollButton, true);
+
+// Check periodically when screen changes
+setInterval(updateScrollButton, 500);

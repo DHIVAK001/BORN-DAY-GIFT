@@ -1325,3 +1325,12 @@ section#creatorReveal .screen-nav {
     transform: scale(0.9);
   }
 }
+@media (max-width: 768px) {
+
+  .screen.is-active {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+}
