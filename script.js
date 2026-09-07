@@ -330,10 +330,18 @@ function showMemory(index) {
   progressButtons.forEach((button, buttonIndex) => button.classList.toggle('is-active', buttonIndex === memoryIndex));
   memoryImage.hidden = true;
   memoryFallback.hidden = false;
-  memoryImage.onload = () => { memoryFallback.hidden = true; memoryImage.hidden = false; };
+  memoryImage.onload = () => {
+    memoryFallback.hidden = true;
+    memoryImage.hidden = false;
+  };
   memoryImage.onerror = () => { memoryFallback.hidden = false; memoryImage.hidden = true; };
   memoryImage.src = memory.image;
   memoryImage.alt = memory.caption;
+  // Android browsers may reuse a cached image without firing a new load event.
+  if (memoryImage.complete && memoryImage.naturalWidth > 0) {
+    memoryFallback.hidden = true;
+    memoryImage.hidden = false;
+  }
 }
 
 function typeLetter() {
@@ -1007,76 +1015,3 @@ if (birthdayRevealVideo && creatorVideo && creatorFinal) {
     });
 
 }
-const pageScrollButton = document.getElementById('pageScrollButton');
-
-if (pageScrollButton) {
-
-  pageScrollButton.addEventListener('click', () => {
-
-    const activeScreen = document.querySelector('.screen.is-active');
-
-    if (!activeScreen) return;
-
-    const currentScroll = activeScreen.scrollTop;
-    const maxScroll = activeScreen.scrollHeight - activeScreen.clientHeight;
-
-    // If reached bottom → go to top
-    if (currentScroll >= maxScroll - 20) {
-
-      activeScreen.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-
-      pageScrollButton.innerHTML = '↓';
-      pageScrollButton.setAttribute('aria-label', 'Scroll down');
-
-    } else {
-
-      // Scroll down
-      activeScreen.scrollBy({
-        top: activeScreen.clientHeight * 0.7,
-        behavior: 'smooth'
-      });
-
-    }
-
-  });
-
-}
-function updateScrollButton() {
-
-  const activeScreen = document.querySelector('.screen.is-active');
-
-  if (!activeScreen || !pageScrollButton) return;
-
-  const maxScroll = activeScreen.scrollHeight - activeScreen.clientHeight;
-
-  // No scrolling needed
-  if (maxScroll <= 20) {
-    pageScrollButton.style.display = 'none';
-    return;
-  }
-
-  pageScrollButton.style.display = 'flex';
-
-  // At bottom
-  if (activeScreen.scrollTop >= maxScroll - 20) {
-
-    pageScrollButton.innerHTML = '↑';
-    pageScrollButton.setAttribute('aria-label', 'Scroll to top');
-
-  } else {
-
-    pageScrollButton.innerHTML = '↓';
-    pageScrollButton.setAttribute('aria-label', 'Scroll down');
-
-  }
-
-}
-
-// Detect scrolling
-document.addEventListener('scroll', updateScrollButton, true);
-
-// Check periodically when screen changes
-setInterval(updateScrollButton, 500);
