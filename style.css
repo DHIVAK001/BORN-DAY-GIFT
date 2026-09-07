@@ -1171,3 +1171,117 @@ section#creatorReveal .screen-nav {
 #memories .screen-content {
     overflow: visible !important;
 }
+/* =========================================
+   MOBILE FIX - SCREEN 05 MEMORIES
+========================================= */
+
+@media screen and (max-width: 600px) {
+
+  /* Allow page to scroll naturally */
+  .memories.screen {
+    min-height: 100svh !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    padding-bottom: 90px !important;
+  }
+
+  /* Main content */
+  .memories .screen-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 70px 20px 30px !important;
+  }
+
+  /* Heading */
+  .memories h2 {
+    font-size: clamp(38px, 11vw, 52px) !important;
+    line-height: 0.95 !important;
+    margin-bottom: 15px !important;
+  }
+
+  .memories .eyebrow {
+    font-size: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .memories .section-intro {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 25px !important;
+  }
+
+  /* Memory viewer */
+  .memory-viewer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Image frame - important */
+  .memory-frame {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 58svh !important;
+    overflow: hidden !important;
+  }
+
+  .memory-frame img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 58svh !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  /* Memory information */
+  .memory-meta {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    padding: 15px 0 !important;
+  }
+
+  #memoryCount {
+    font-size: 12px !important;
+  }
+
+  #memoryCaption,
+  .memory-meta span:last-child {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+    width: 100% !important;
+  }
+
+  /* Memory arrow controls */
+  .memory-controls {
+    display: flex !important;
+    width: 100% !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-top: 10px !important;
+    padding-bottom: 20px !important;
+  }
+
+  .memory-controls .circle-button {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* Bottom navigation */
+  .memories .screen-nav {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+    padding: 20px !important;
+  }
+
+}
