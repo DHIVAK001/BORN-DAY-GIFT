@@ -947,12 +947,8 @@ section#creatorReveal .screen-nav {
 
 #scratch {
   background-image:
-    linear-gradient(
-      rgba(255, 248, 245, 0.78),
-      rgba(255, 248, 245, 0.85)
-    ),
+    linear-gradient(rgba(255,248,245,0.40), rgba(255,248,245,0.45)),
     url("assets/images/screen2.jpeg");
-
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
