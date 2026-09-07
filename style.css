@@ -1285,3 +1285,43 @@ section#creatorReveal .screen-nav {
   }
 
 }
+/* MOBILE SCROLL BUTTON */
+.page-scroll-button {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .page-scroll-button {
+    display: flex;
+    position: fixed;
+    right: 16px;
+    bottom: 90px;
+    width: 48px;
+    height: 48px;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(109, 38, 56, 0.9);
+    color: white;
+
+    font-size: 26px;
+    font-weight: bold;
+
+    z-index: 9999;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+
+  .page-scroll-button:active {
+    transform: scale(0.9);
+  }
+}

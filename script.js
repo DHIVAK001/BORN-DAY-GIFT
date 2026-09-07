@@ -1007,3 +1007,40 @@ if (birthdayRevealVideo && creatorVideo && creatorFinal) {
     });
 
 }
+const pageScrollButton = document.getElementById('pageScrollButton');
+
+if (pageScrollButton) {
+
+  pageScrollButton.addEventListener('click', () => {
+
+    const activeScreen = document.querySelector('.screen.is-active');
+
+    if (!activeScreen) return;
+
+    const currentScroll = activeScreen.scrollTop;
+    const maxScroll = activeScreen.scrollHeight - activeScreen.clientHeight;
+
+    // If reached bottom → go to top
+    if (currentScroll >= maxScroll - 20) {
+
+      activeScreen.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
+      pageScrollButton.innerHTML = '↓';
+      pageScrollButton.setAttribute('aria-label', 'Scroll down');
+
+    } else {
+
+      // Scroll down
+      activeScreen.scrollBy({
+        top: activeScreen.clientHeight * 0.7,
+        behavior: 'smooth'
+      });
+
+    }
+
+  });
+
+}
