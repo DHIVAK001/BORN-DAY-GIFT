@@ -48,7 +48,6 @@ const creatorIntro = document.querySelector('#creatorIntro');
 const creatorGame = document.querySelector('#creatorGame');
 const creatorVideo = document.querySelector('#creatorVideo');
 const creatorVideoNote = document.querySelector('#creatorVideoNote');
-
 const birthdayVideoWrap = document.querySelector('#birthdayVideoWrap');
 const creatorFinal = document.querySelector('#creatorFinal');
 const creatorScreen = document.querySelector('#creatorReveal');
@@ -198,10 +197,10 @@ function showScreen(index) {
   if (screenIndex === 0) {
     stopMusic();
     rainSound.play().catch(() => {});
-  } else if (screenIndex === 2) {
+  } else if (screenIndex === 3) {
     stopMusic();
     countdownSound.play().catch(() => {});
-  } else if (screenIndex === 6) {
+  } else if (screenIndex === 7) {
     typeLetter();
   } else {
     resumeBackgroundMusic();
@@ -968,3 +967,43 @@ if (
     updateClock();
 
 })();
+
+/* VIDEO NOTE → PLAY VIDEO */
+
+if (creatorVideoNote && birthdayVideoWrap && birthdayRevealVideo) {
+
+    creatorVideoNote.addEventListener('click', function () {
+
+        /* Hide the note */
+        creatorVideoNote.hidden = true;
+
+        /* Show video */
+        birthdayVideoWrap.hidden = false;
+
+        /* Start playing */
+        birthdayRevealVideo.play();
+
+    });
+
+}
+
+
+/* WHEN VIDEO ENDS → SHOW FINAL CREATOR SCREEN */
+
+if (birthdayRevealVideo && creatorVideo && creatorFinal) {
+
+    birthdayRevealVideo.addEventListener('ended', function () {
+
+        /* Stop and hide video */
+        birthdayRevealVideo.pause();
+        birthdayRevealVideo.currentTime = 0;
+
+        /* Hide video stage */
+        creatorVideo.hidden = true;
+
+        /* Show final stage */
+        creatorFinal.hidden = false;
+
+    });
+
+}
