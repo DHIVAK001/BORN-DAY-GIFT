@@ -1,8 +1,3 @@
-const memories = [
-  { image: 'assets/images/photo1.jpg', caption: 'A beautiful memory, waiting to be added' },
-  { image: 'assets/images/photo2.jpg', caption: 'One of the moments I will always keep' },
-  { image: 'assets/images/photo3.jpg', caption: 'More laughter, more memories, more you' }
-];
 const birthdayLetter = `SOWBHAGYALAKSHMI,\n\nI hope this birthday brings you the same warmth and happiness that you bring to the people around you. Your kindness, your creativity, and the way you make every moment brighter are gifts in themselves.\n\nThank you for being wonderfully, unmistakably you. Here is to another year of beautiful beginnings, brave dreams, and memories we have not made yet.`;
 const password = 'sowbhagyalakshmi';
 const gate = document.querySelector('#passwordGate');
@@ -25,13 +20,11 @@ const rainSound = document.querySelector('#rainSound');
 const countdownSound = document.querySelector('#countdownSound');
 const typewriterSound = document.querySelector('#typewriterSound');
 const musicToggle = document.querySelector('#musicToggle');
-const memoryImage = document.querySelector('#memoryImage');
-const memoryFallback = document.querySelector('#memoryFallback');
-const memoryCaption = document.querySelector('#memoryCaption');
-const memoryCount = document.querySelector('#memoryCount');
-const progressButtons = [...document.querySelectorAll('#memoryProgress button')];
 const finalMessage = document.querySelector('#finalMessage');
 const finalImage = document.querySelector('#finalImage');
+const finalPhotoPrevious = document.querySelector('#finalPhotoPrevious');
+const finalPhotoNext = document.querySelector('#finalPhotoNext');
+const finalPhotoThumbs = [...document.querySelectorAll('#finalPhotoGrid [data-photo-index]')];
 const revealButton = document.querySelector('#revealButton');
 const letterText = document.querySelector('#letterText');
 const scratchCard = document.querySelector('#scratchCard');
@@ -70,7 +63,6 @@ const ageValues = {
 const currentDate = document.querySelector('#currentDate');
 const birthDate = new Date(2004, 9, 1, 8, 25, 0);
 let screenIndex = 0;
-let memoryIndex = 0;
 let popupTimer;
 let audioContext;
 let musicGain;
@@ -84,6 +76,8 @@ let isTypingLetter = false;
 let letterTypingTimer;
 let finalPhotoRevealTimer;
 let finalRevealRun = 0;
+let finalPhotoIndex = 0;
+const finalPhotos = ['assets/images/final1.jpg', 'assets/images/final2.jpg', 'assets/images/final3.jpg'];
 let creatorProgress = 0;
 let creatorWrongGuesses = 0;
 let creatorAdvanceTimer;
@@ -200,7 +194,7 @@ function showScreen(index) {
   } else if (screenIndex === 3) {
     stopMusic();
     countdownSound.play().catch(() => {});
-  } else if (screenIndex === 7) {
+  } else if (screenIndex === 6) {
     typeLetter();
   } else {
     resumeBackgroundMusic();
@@ -322,28 +316,6 @@ function setupScratchCard() {
   window.addEventListener('resize', resizeScratchCard);
 }
 
-function showMemory(index) {
-  memoryIndex = (index + memories.length) % memories.length;
-  const memory = memories[memoryIndex];
-  memoryCaption.textContent = memory.caption;
-  memoryCount.textContent = `0${memoryIndex + 1} / 0${memories.length}`;
-  progressButtons.forEach((button, buttonIndex) => button.classList.toggle('is-active', buttonIndex === memoryIndex));
-  memoryImage.hidden = true;
-  memoryFallback.hidden = false;
-  memoryImage.onload = () => {
-    memoryFallback.hidden = true;
-    memoryImage.hidden = false;
-  };
-  memoryImage.onerror = () => { memoryFallback.hidden = false; memoryImage.hidden = true; };
-  memoryImage.src = memory.image;
-  memoryImage.alt = memory.caption;
-  // Android browsers may reuse a cached image without firing a new load event.
-  if (memoryImage.complete && memoryImage.naturalWidth > 0) {
-    memoryFallback.hidden = true;
-    memoryImage.hidden = false;
-  }
-}
-
 function typeLetter() {
   const target = document.querySelector('#letterText');
   if (target.dataset.typed) {
@@ -460,10 +432,10 @@ musicToggle.addEventListener('click', () => {
   if (!music.paused || generatedMusicTimer) stopMusic();
   else startMusic();
 });
-document.querySelector('#previousMemory').addEventListener('click', () => showMemory(memoryIndex - 1));
-document.querySelector('#nextMemory').addEventListener('click', () => showMemory(memoryIndex + 1));
-progressButtons.forEach((button, index) => button.addEventListener('click', () => showMemory(index)));
 finalImage.onerror = () => { finalImage.hidden = true; document.querySelector('.memory-fallback').hidden = false; };
+finalPhotoPrevious.addEventListener('click', () => selectFinalPhoto(finalPhotoIndex - 1));
+finalPhotoNext.addEventListener('click', () => selectFinalPhoto(finalPhotoIndex + 1));
+finalPhotoThumbs.forEach((thumb) => thumb.addEventListener('click', () => selectFinalPhoto(Number(thumb.dataset.photoIndex))));
 
 // Reveal button - floating effect + puzzle animation
 revealButton.addEventListener('click', function handleRevealClick(event) {
@@ -529,6 +501,18 @@ function releaseBlueButterflies() {
     if (finalImage.complete && finalImage.naturalWidth > 0) showPhoto();
     else finalImage.addEventListener('load', showPhoto, { once: true });
   }, 1350);
+}
+
+function selectFinalPhoto(index) {
+  finalPhotoIndex = (index + finalPhotos.length) % finalPhotos.length;
+  finalImage.src = finalPhotos[finalPhotoIndex];
+  finalImage.alt = `Sowbhagyalakshmi birthday photo ${finalPhotoIndex + 1}`;
+  finalPhotoThumbs.forEach((thumb, thumbIndex) => {
+    thumb.classList.toggle('is-active', thumbIndex === finalPhotoIndex);
+  });
+  finalImage.classList.remove('is-arriving');
+  void finalImage.offsetWidth;
+  finalImage.classList.add('is-arriving');
 }
 
 function shuffleLetters(letters) {
@@ -685,8 +669,6 @@ function resetBirthdayExperience() {
   isTypingLetter = false;
   delete letterText.dataset.typed;
   letterText.textContent = '';
-  showMemory(0);
-
   revealButton.hidden = false;
   delete revealButton.dataset.attempts;
   revealButton.innerHTML = 'Reveal it <span>&#10024;</span>';
@@ -694,6 +676,7 @@ function resetBirthdayExperience() {
   revealButton.removeAttribute('style');
   finalMessage.hidden = true;
   finalImage.hidden = true;
+  selectFinalPhoto(0);
   finalImage.classList.remove('is-arriving');
   document.querySelectorAll('.confetti-piece, .scratch-sparkle, .blue-butterfly').forEach((element) => element.remove());
   resetCreatorReveal();
@@ -704,7 +687,6 @@ setupScratchCard();
 resetCreatorReveal();
 
 showScreen(0);
-showMemory(0);
 updateAge();
 window.setInterval(updateAge, 1000);
 
