@@ -47,6 +47,7 @@ const creatorScreen = document.querySelector('#creatorReveal');
 const creatorGuessButton = document.querySelector('#creatorGuessButton');
 const creatorKeyboard = document.querySelector('#creatorKeyboard');
 const creatorSlots = document.querySelector('#creatorSlots');
+const creatorFlyPreview = document.querySelector('#creatorFlyPreview');
 const creatorFeedback = document.querySelector('#creatorFeedback');
 const creatorRestart = document.querySelector('#creatorRestart');
 const birthdayRevealVideo = document.querySelector('#birthdayRevealVideo');
@@ -67,6 +68,7 @@ let popupTimer;
 let audioContext;
 let musicGain;
 let generatedMusicTimer;
+let musicMuted = false;
 let scratchContext;
 let isScratching = false;
 let scratchRevealed = false;
@@ -81,6 +83,8 @@ const finalPhotos = ['assets/images/final1.jpg', 'assets/images/final2.jpg', 'as
 let creatorProgress = 0;
 let creatorWrongGuesses = 0;
 let creatorAdvanceTimer;
+const creatorAnswer = 'ENGINEER';
+const creatorCharms = ['🎂', '✨', '🎈', '🎁', '🌟', '🧁', '💫', '🎉'];
 
 // Screen ambience has priority over the general background track.
 rainSound.loop = true;
@@ -127,6 +131,7 @@ function playGeneratedTone(frequency, startTime, duration) {
 }
 
 function startGeneratedMusic() {
+  if (musicMuted) return;
   if (!audioContext) audioContext = new AudioContext();
   audioContext.resume();
   const notes = [261.63, 329.63, 392, 329.63, 293.66, 349.23, 440, 349.23];
@@ -141,6 +146,7 @@ function startGeneratedMusic() {
 }
 
 function startMusic() {
+  if (musicMuted) return;
   music.play().then(() => {
     musicToggle.classList.add('is-playing');
     musicToggle.setAttribute('aria-label', 'Pause birthday music');
@@ -165,10 +171,11 @@ function stopScreenSounds() {
 
 function resumeBackgroundMusic() {
   const hasScreenSound = !rainSound.paused || !countdownSound.paused || !typewriterSound.paused;
-  if (gate.classList.contains('is-unlocked') && !hasScreenSound) startMusic();
+  if (!musicMuted && gate.classList.contains('is-unlocked') && !hasScreenSound) startMusic();
 }
 
 function playWrongPasswordSound() {
+  wrongPasswordSound.pause();
   wrongPasswordSound.currentTime = 0;
   wrongPasswordSound.play().catch(() => {});
 }
@@ -428,9 +435,13 @@ dhivakarImage.addEventListener('error', () => {
   creatorPhoto.classList.remove('has-image');
 });
 musicToggle.addEventListener('click', () => {
-  if (screenIndex === 0 || screenIndex === 2 || (screenIndex === 6 && isTypingLetter)) return;
-  if (!music.paused || generatedMusicTimer) stopMusic();
-  else startMusic();
+  if (musicMuted) {
+    musicMuted = false;
+    resumeBackgroundMusic();
+  } else {
+    musicMuted = true;
+    stopMusic();
+  }
 });
 finalImage.onerror = () => { finalImage.hidden = true; document.querySelector('.memory-fallback').hidden = false; };
 finalPhotoPrevious.addEventListener('click', () => selectFinalPhoto(finalPhotoIndex - 1));
@@ -525,37 +536,41 @@ function shuffleLetters(letters) {
 }
 
 function buildCreatorGame() {
-  const answer = 'DHIVAKAR';
   creatorSlots.innerHTML = '';
   creatorKeyboard.innerHTML = '';
-  [...answer].forEach(() => {
+  creatorFlyPreview.innerHTML = '';
+  [...creatorAnswer].forEach(() => {
     const slot = document.createElement('span');
     slot.className = 'creator-slot';
     slot.textContent = '_';
     creatorSlots.append(slot);
   });
-  shuffleLetters('ABCDEFGHIJKLMNOPQRSTUVWXYZ').forEach((letter) => {
+  shuffleLetters('ABCDEFGHIJKLMNOPQRSTUVWXYZ').forEach((letter, index) => {
     const key = document.createElement('button');
     key.type = 'button';
     key.className = 'creator-key';
-    key.textContent = letter;
+    key.innerHTML = '<span>' + letter + '</span><small>' + creatorCharms[index % creatorCharms.length] + '</small>';
     key.setAttribute('aria-label', `Letter ${letter}`);
     key.addEventListener('click', () => chooseCreatorLetter(letter, key));
     creatorKeyboard.append(key);
   });
+  playCreatorFlyIn();
 }
 
 function chooseCreatorLetter(letter, key) {
-  const answer = 'DHIVAKAR';
-  if (letter === answer[creatorProgress]) {
+  const answer = creatorAnswer;
+  if (letter === creatorAnswer[creatorProgress]) {
     const slot = creatorSlots.children[creatorProgress];
     slot.textContent = letter;
-    slot.classList.add('is-filled');
+    slot.classList.add('is-filled', 'is-correct-pop');
+    window.setTimeout(() => slot.classList.remove('is-correct-pop'), 520);
+    playCreatorSound('correct', creatorProgress);
     // Keep a repeated letter available until every occurrence has been used.
-    if (answer.indexOf(letter, creatorProgress + 1) === -1) key.classList.add('is-correct');
+    if (creatorAnswer.indexOf(letter, creatorProgress + 1) === -1) key.classList.add('is-correct');
     creatorProgress += 1;
     creatorFeedback.textContent = creatorProgress === answer.length ? 'Okay... now you know. 👀' : 'Correct. Keep going...';
-    if (creatorProgress === answer.length) {
+    if (creatorProgress === creatorAnswer.length) {
+      playCreatorSound('complete');
       creatorKeyboard.querySelectorAll('button').forEach((button) => { button.disabled = true; });
       creatorAdvanceTimer = window.setTimeout(startCreatorVideo, 900);
     }
@@ -570,6 +585,12 @@ function chooseCreatorLetter(letter, key) {
     'THE AUDACITY 😭'
   ];
   creatorFeedback.textContent = funnyMessages[Math.min(creatorWrongGuesses - 1, funnyMessages.length - 1)];
+  playCreatorSound('wrong');
+  creatorSlots.classList.remove('is-shaking');
+  creatorGame.classList.remove('is-shaking');
+  void creatorSlots.offsetWidth;
+  creatorSlots.classList.add('is-shaking');
+  creatorGame.classList.add('is-shaking');
   key.classList.remove('is-wrong');
   void key.offsetWidth;
   key.classList.add('is-wrong');
@@ -582,6 +603,47 @@ function startCreatorGame() {
   creatorWrongGuesses = 0;
   creatorFeedback.textContent = 'The keyboard is deliberately unhelpful.';
   buildCreatorGame();
+}
+
+function playCreatorSound(kind, step = 0) {
+  if (!audioContext) audioContext = new AudioContext();
+  audioContext.resume();
+  const now = audioContext.currentTime;
+  const notes = kind === 'complete' ? [523.25, 659.25, 783.99, 1046.5] : kind === 'correct' ? [659.25 + (step * 18), 987.77 + (step * 22)] : kind === 'whoosh' ? [180 + (step * 15)] : [150, 105];
+  notes.forEach((frequency, index) => {
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.type = kind === 'wrong' ? 'square' : kind === 'whoosh' ? 'triangle' : 'sine';
+    oscillator.frequency.setValueAtTime(frequency, now + (index * .07));
+    if (kind === 'whoosh') oscillator.frequency.exponentialRampToValueAtTime(frequency * 2.4, now + .16);
+    gain.gain.setValueAtTime(.0001, now + (index * .07));
+    gain.gain.exponentialRampToValueAtTime(kind === 'complete' ? .12 : .07, now + (index * .07) + .015);
+    gain.gain.exponentialRampToValueAtTime(.0001, now + (index * .07) + (kind === 'complete' ? .28 : kind === 'whoosh' ? .18 : .12));
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start(now + (index * .07));
+    oscillator.stop(now + (index * .07) + (kind === 'complete' ? .32 : kind === 'whoosh' ? .2 : .16));
+  });
+}
+
+function playCreatorFlyIn() {
+  const directions = [
+    ['-125vw', '-35vh'], ['110vw', '-20vh'], ['-95vw', '24vh'], ['120vw', '28vh'],
+    ['-75vw', '48vh'], ['90vw', '52vh'], ['-110vw', '-55vh'], ['105vw', '58vh']
+  ];
+  [...creatorAnswer].forEach((letter, index) => {
+    const token = document.createElement('span');
+    token.className = 'creator-fly-letter';
+    token.textContent = letter;
+    token.style.setProperty('--fly-x', directions[index][0]);
+    token.style.setProperty('--fly-y', directions[index][1]);
+    token.style.setProperty('--fly-rotate', ((index % 2 ? 1 : -1) * (8 + index * 4)) + 'deg');
+    token.style.setProperty('--fly-delay', (index * 115) + 'ms');
+    token.style.setProperty('--slot-x', ((index - 3.5) * 10) + '%');
+    creatorFlyPreview.append(token);
+    window.setTimeout(() => playCreatorSound('whoosh', index), index * 115);
+  });
+  window.setTimeout(() => { creatorFlyPreview.innerHTML = ''; }, 1850);
+  playCreatorSound('correct');
 }
 
 function startCreatorVideo() {
@@ -640,6 +702,7 @@ function resetCreatorReveal() {
   creatorRestart.hidden = true;
   creatorSlots.innerHTML = '';
   creatorKeyboard.innerHTML = '';
+  creatorFlyPreview.innerHTML = '';
   creatorScreen.classList.remove('is-transitioning', 'is-playing-video');
 }
 
