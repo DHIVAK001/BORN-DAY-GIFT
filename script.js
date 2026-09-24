@@ -12,6 +12,8 @@ screens.forEach((screen, index) => {
   const counter = screen.querySelector('.screen-count');
   if (counter) counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(screens.length).padStart(2, '0')}`;
 });
+const creatorCounter = document.querySelector('#creatorReveal .screen-count');
+if (creatorCounter) creatorCounter.textContent = '10 / 10';
 document.querySelector('#final [data-next]').innerHTML = 'One last thing <span>&rarr;</span>';
 const music = document.querySelector('#birthdayMusic');
 const wrongPasswordSound = document.querySelector('#wrongPasswordSound');
