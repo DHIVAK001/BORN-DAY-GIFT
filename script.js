@@ -1,5 +1,6 @@
 const birthdayLetter = `SOWBHAGYALAKSHMI,\n\nI hope this birthday brings you the same warmth and happiness that you bring to the people around you. Your kindness, your creativity, and the way you make every moment brighter are gifts in themselves.\n\nThank you for being wonderfully, unmistakably you. Here is to another year of beautiful beginnings, brave dreams, and memories we have not made yet.`;
 const password = 'sowbhagyalakshmi';
+const heartLoader = document.querySelector('#heartLoader');
 const gate = document.querySelector('#passwordGate');
 const site = document.querySelector('#site');
 const passwordForm = document.querySelector('#passwordForm');
@@ -87,6 +88,9 @@ let creatorWrongGuesses = 0;
 let creatorAdvanceTimer;
 const creatorAnswer = 'ENGINEER';
 const creatorCharms = ['🎂', '✨', '🎈', '🎁', '🌟', '🧁', '💫', '🎉'];
+
+// Hold the completed heart briefly before revealing the existing entry screen.
+window.setTimeout(() => heartLoader.classList.add('is-finished'), 4700);
 
 // Screen ambience has priority over the general background track.
 rainSound.loop = true;
@@ -444,6 +448,7 @@ musicToggle.addEventListener('click', () => {
     musicMuted = true;
     stopMusic();
   }
+
 });
 finalImage.onerror = () => { finalImage.hidden = true; document.querySelector('.memory-fallback').hidden = false; };
 finalPhotoPrevious.addEventListener('click', () => selectFinalPhoto(finalPhotoIndex - 1));

@@ -1297,3 +1297,60 @@ section#creatorReveal .screen-nav {
     height: 34px;
   }
 }
+
+/* Opening overlay; it sits above, then leaves the existing birthday experience untouched. */
+.heart-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 49%, rgba(255, 218, 218, .32), transparent 24%), linear-gradient(135deg, #fffaf6 0%, #fff3ef 52%, #fff9f3 100%);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .8s ease, visibility .8s ease;
+}
+
+.heart-loader::before {
+  content: '';
+  position: absolute;
+  width: min(112vw, 620px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(190, 53, 67, .07);
+  border-radius: 50%;
+}
+
+.heart-loader.is-finished { opacity: 0; visibility: hidden; pointer-events: none; }
+.heart-loader__art { position: relative; width: clamp(360px, 100vw, 520px); height: 100svh; overflow: visible; }
+.heart-loader__path {
+  fill: none;
+  stroke: #d83446;
+  stroke-width: 2.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: heart-loader-draw 3.8s cubic-bezier(.55, .05, .3, 1) forwards;
+}
+
+.heart-loader__dot {
+  fill: #ee5261;
+  opacity: 0;
+  filter: drop-shadow(0 0 5px rgba(222, 38, 54, .9));
+  animation: heart-loader-dot .18s ease .04s forwards;
+}
+
+@keyframes heart-loader-draw { to { stroke-dashoffset: 0; } }
+@keyframes heart-loader-dot { to { opacity: 1; } }
+
+@media (max-width: 430px) {
+  .heart-loader__art { width: 100vw; }
+  .heart-loader__path { stroke-width: 2.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heart-loader__path { stroke-dashoffset: 0; animation: none; }
+  .heart-loader__dot { opacity: 1; animation: none; }
+  .heart-loader { transition-duration: .25s; }
+}

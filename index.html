@@ -22,6 +22,13 @@
   </style>
 </head>
 <body>
+  <div class="heart-loader" id="heartLoader" role="status" aria-label="Loading your birthday surprise">
+    <svg class="heart-loader__art" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs><filter id="heartLoaderGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur><feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter></defs>
+      <path class="heart-loader__path" pathLength="1000" d="M -22 200 C 18 200 45 196 74 200 C 102 204 132 204 157 199 C 174 196 188 194 200 195 C 187 169 145 166 145 194 C 145 223 177 249 200 270 C 223 249 255 223 255 194 C 255 166 213 169 200 195 C 212 194 226 196 243 199 C 268 204 298 204 326 200 C 355 196 382 200 422 200"></path>
+      <circle class="heart-loader__dot" r="4.5" filter="url(#heartLoaderGlow)"><animateMotion dur="3.8s" fill="freeze" path="M -22 200 C 18 200 45 196 74 200 C 102 204 132 204 157 199 C 174 196 188 194 200 195 C 187 169 145 166 145 194 C 145 223 177 249 200 270 C 223 249 255 223 255 194 C 255 166 213 169 200 195 C 212 194 226 196 243 199 C 268 204 298 204 326 200 C 355 196 382 200 422 200"></animateMotion></circle>
+    </svg>
+  </div>
   <div class="password-gate" id="passwordGate" role="dialog" aria-modal="true">
     <div class="gate-card">
       <div class="compact-logo" aria-hidden="true">S</div>
