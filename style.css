@@ -1357,17 +1357,22 @@ section#creatorReveal .screen-nav {
 
 /* Portrait birthday photos: keep the full image visible on narrow Android screens. */
 #final .final-photo-stage {
-  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  align-items: center;
   gap: 8px;
+  width: 100%;
 }
 
 #final .final-photo-stage .final-photo {
-  width: min(100%, 300px);
+  width: min(100%, 320px);
   height: auto;
   aspect-ratio: 4 / 5;
   margin: 0 auto;
-  border: 3px solid rgba(232, 201, 151, .85);
+  overflow: hidden;
+  border: 3px solid rgba(232, 201, 151, 0.85);
   background: #421b29;
+  border-radius: 18px;
 }
 
 #final .final-photo #finalImage {
@@ -1381,11 +1386,21 @@ section#creatorReveal .screen-nav {
 @media (max-width: 600px) {
   #final .final-photo-stage {
     grid-template-columns: 34px minmax(0, 1fr) 34px;
-    gap: 6px;
+    gap: 5px;
+    width: 100%;
   }
 
   #final .final-photo-stage .final-photo {
-    width: min(100%, 280px, 34svh);
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 4 / 5;
+    margin: 0 auto;
+  }
+
+  #final .final-photo #finalImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   #final .photo-arrow {
