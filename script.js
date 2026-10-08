@@ -1,3 +1,4 @@
+// PASTE YOUR COMPLETE TAMIL LETTER BELOW when it is provided. Keep the text inside these backticks.
 const birthdayLetter = `SOWBHAGYALAKSHMI,\n\nI hope this birthday brings you the same warmth and happiness that you bring to the people around you. Your kindness, your creativity, and the way you make every moment brighter are gifts in themselves.\n\nThank you for being wonderfully, unmistakably you. Here is to another year of beautiful beginnings, brave dreams, and memories we have not made yet.`;
 const password = 'sowbhagyalakshmi';
 const heartLoader = document.querySelector('#heartLoader');
@@ -30,6 +31,8 @@ const finalPhotoNext = document.querySelector('#finalPhotoNext');
 const finalPhotoThumbs = [...document.querySelectorAll('#finalPhotoGrid [data-photo-index]')];
 const revealButton = document.querySelector('#revealButton');
 const letterText = document.querySelector('#letterText');
+const envelopeExperience = document.querySelector('#envelopeExperience');
+const envelopeOpenButton = document.querySelector('#envelopeOpenButton');
 const scratchCard = document.querySelector('#scratchCard');
 const scratchCanvas = document.querySelector('#scratchCanvas');
 const scratchAgeAnswer = document.querySelector('#scratchAgeAnswer');
@@ -79,6 +82,7 @@ let lastScratchPoint;
 let selectedBrush = null;
 let isTypingLetter = false;
 let letterTypingTimer;
+let envelopeRevealTimers = [];
 let finalPhotoRevealTimer;
 let finalRevealRun = 0;
 let finalPhotoIndex = 0;
@@ -208,11 +212,55 @@ function showScreen(index) {
     stopMusic();
     countdownSound.play().catch(() => {});
   } else if (screenIndex === 6) {
-    typeLetter();
+    if (envelopeExperience.classList.contains('is-unfolded')) typeLetter();
   } else {
     resumeBackgroundMusic();
   }
 }
+
+function playRevealSound(kind) {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    if (!audioContext) audioContext = new AudioContextClass();
+    if (audioContext.state === 'suspended') audioContext.resume();
+    const now = audioContext.currentTime;
+    const notes = kind === 'sparkle' ? [880, 1174.66, 1567.98] : [392, 294];
+    notes.forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = kind === 'sparkle' ? 'sine' : 'triangle';
+      oscillator.frequency.setValueAtTime(frequency, now + index * .11);
+      gain.gain.setValueAtTime(.0001, now + index * .11);
+      gain.gain.exponentialRampToValueAtTime(kind === 'sparkle' ? .018 : .025, now + index * .11 + .025);
+      gain.gain.exponentialRampToValueAtTime(.0001, now + index * .11 + (kind === 'sparkle' ? .34 : .2));
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start(now + index * .11);
+      oscillator.stop(now + index * .11 + .38);
+    });
+  } catch (_) {
+    // The reveal remains silent when Web Audio is unavailable.
+  }
+}
+
+envelopeOpenButton.addEventListener('click', () => {
+  if (envelopeExperience.classList.contains('is-opening')) return;
+  envelopeExperience.classList.add('is-opening');
+  playRevealSound('envelope');
+  envelopeRevealTimers.push(window.setTimeout(() => {
+    envelopeExperience.classList.add('is-rising');
+    playRevealSound('sparkle');
+  }, 650));
+  envelopeRevealTimers.push(window.setTimeout(() => {
+    envelopeExperience.classList.add('is-unfolded');
+    playRevealSound('sparkle');
+  }, 1550));
+  envelopeRevealTimers.push(window.setTimeout(() => {
+    if (!envelopeExperience.classList.contains('is-unfolded')) return;
+    typeLetter();
+  }, 2550));
+});
 
 function celebrateScratch() {
   if (scratchRevealed) return;
@@ -714,6 +762,9 @@ function resetCreatorReveal() {
 }
 
 function resetBirthdayExperience() {
+  envelopeRevealTimers.forEach((timer) => window.clearTimeout(timer));
+  envelopeRevealTimers = [];
+  envelopeExperience.classList.remove('is-opening', 'is-rising', 'is-unfolded');
   window.clearTimeout(letterTypingTimer);
   window.clearTimeout(finalPhotoRevealTimer);
   finalRevealRun += 1;

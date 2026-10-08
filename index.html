@@ -247,7 +247,16 @@
 <!-- =========================
 SCREEN 07 - LETTER CARD
 ========================= -->
-    <section class="screen screen--floating-hearts letter" id="letter"><div class="screen-content letter-content reveal"><p class="eyebrow">Chapter four</p><h2>A little something<br><em>from me...</em> <span>&#128140;</span></h2><article class="letter-card"><span class="letter-mark">S</span><p class="letter-date">A note for your birthday</p><p id="letterText" class="letter-text"></p><p class="letter-signoff">With lots of love,<br><strong>Your friend</strong></p></article></div><div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">07 / 09</span><button class="nav-button nav-button--next" type="button" data-next>Final surprise <span>&rarr;</span></button></div></section>
+    <section class="screen screen--floating-hearts letter" id="letter"><div class="screen-content letter-content reveal envelope-experience" id="envelopeExperience">
+      <div class="romantic-petals" aria-hidden="true"><i>✿</i><i>❀</i><i>✧</i><i>♡</i><i>✿</i><i>·</i><i>❀</i><i>✧</i></div>
+      <div class="envelope-intro" id="envelopeIntro"><p class="eyebrow">A little birthday delivery</p><h2>There’s something<br><em>for you</em> <span>♡</span></h2><p class="envelope-subtitle">A tiny birthday surprise, made just for you.</p></div>
+      <div class="envelope-scene" id="envelopeScene" aria-label="A floral birthday envelope">
+        <article class="revealed-letter" id="revealedLetter" aria-label="Birthday letter"><span class="letter-flower letter-flower--one" aria-hidden="true">✿</span><span class="letter-flower letter-flower--two" aria-hidden="true">❀</span><span class="letter-corner-heart" aria-hidden="true">♡ ✧</span><div class="revealed-letter__inner"><span class="letter-mark">S</span><p class="letter-date">A note for your birthday</p><p id="letterText" class="letter-text"></p><p class="letter-signoff">With lots of love,<br><strong>Your friend</strong></p></div></article>
+        <div class="envelope" aria-hidden="true"><div class="envelope-pocket"></div><div class="envelope-flap"></div><div class="envelope-ribbon"></div><div class="envelope-bow"><i></i><i></i><b>♡</b></div><span class="envelope-flower envelope-flower--left">✿</span><span class="envelope-flower envelope-flower--right">❀</span><span class="envelope-sparkle">✧</span></div>
+      </div>
+      <button class="button envelope-open-button" id="envelopeOpenButton" type="button">💗 Open your surprise ✨</button>
+      <p class="envelope-hint" id="envelopeHint" aria-live="polite">A little note, made just for you</p>
+    </div><div class="screen-nav"><button class="nav-button" type="button" data-prev><span>&larr;</span> Previous</button><span class="screen-count">07 / 09</span><button class="nav-button nav-button--next" type="button" data-next>Final surprise <span>&rarr;</span></button></div></section>
 
 <!-- =========================
      SCREEN 08 - FINAL SURPRISE

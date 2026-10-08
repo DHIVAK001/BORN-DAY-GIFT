@@ -1377,6 +1377,57 @@ section#creatorReveal .screen-nav {
   border-radius: 18px;
 }
 
+/* Envelope to letter reveal, contained within the existing letter screen. */
+#letter.envelope-experience,
+#letter { background: radial-gradient(ellipse at 50% 42%, rgba(255,255,255,.8), transparent 48%), radial-gradient(circle at 14% 18%, rgba(246,202,205,.55), transparent 30%), radial-gradient(circle at 88% 78%, rgba(247,220,195,.68), transparent 34%), linear-gradient(145deg,#fff9f0,#f8e6e3 54%,#f6e5da) !important; }
+#letter { overflow-x:hidden; }
+#letter .envelope-experience { position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; width:min(100%,620px); min-height:clamp(390px,calc(100svh - 230px),540px); padding:clamp(16px,3.5vh,34px) 14px 12px; isolation:isolate; }
+#letter .envelope-intro { z-index:2; text-align:center; transition:opacity .55s ease, transform .7s ease; }
+#letter .envelope-intro .eyebrow { margin-bottom:9px; color:#a65f6c; font-size:clamp(10px,2.5vw,13px); letter-spacing:.2em; text-transform:uppercase; }
+#letter .envelope-intro h2 { margin:0; color:#70404b; font:500 clamp(2.3rem,9vw,4.3rem)/.98 var(--serif); letter-spacing:-.035em; text-shadow:0 3px 20px rgba(255,255,255,.8); }
+#letter .envelope-intro h2 em { color:#bd7883; font-weight:400; }
+#letter .envelope-intro h2 span { color:#d8949f; font:normal .55em var(--serif); }
+#letter .envelope-subtitle { margin:12px 0 0; color:#8d6970; font:italic clamp(14px,4vw,18px)/1.4 var(--serif); }
+#letter .romantic-petals { position:absolute; z-index:-1; inset:0; overflow:hidden; pointer-events:none; }
+#letter .romantic-petals i { position:absolute; color:rgba(203,128,143,.54); font-style:normal; animation:romantic-drift 8s ease-in-out infinite alternate; }
+#letter .romantic-petals i:nth-child(1){left:9%;top:18%;font-size:24px} #letter .romantic-petals i:nth-child(2){right:8%;top:23%;font-size:30px;animation-delay:-3s} #letter .romantic-petals i:nth-child(3){left:18%;top:66%;font-size:22px;animation-delay:-5s} #letter .romantic-petals i:nth-child(4){right:15%;top:61%;font-size:30px;animation-delay:-2s} #letter .romantic-petals i:nth-child(5){right:24%;top:13%;font-size:15px;animation-delay:-4s} #letter .romantic-petals i:nth-child(6){left:28%;top:26%;font-size:35px;opacity:.35} #letter .romantic-petals i:nth-child(7){left:6%;top:52%;font-size:17px;animation-delay:-6s} #letter .romantic-petals i:nth-child(8){right:7%;top:46%;font-size:20px;animation-delay:-1s}
+#letter .envelope-scene { position:relative; flex:0 0 auto; width:min(100%,440px); height:clamp(210px,34vh,300px); margin:clamp(8px,2vh,20px) auto 8px; transition:height .65s ease; perspective:1000px; }
+#letter .envelope { position:absolute; z-index:2; width:min(78vw,330px); height:clamp(145px,26vw,200px); left:50%; bottom:5px; transform:translateX(-50%); filter:drop-shadow(0 17px 19px rgba(119,71,73,.2)); transition:transform .7s ease, opacity .4s ease; }
+#letter .envelope-pocket { position:absolute; inset:0; z-index:2; overflow:hidden; border:1px solid rgba(200,153,140,.72); border-radius:5px 5px 12px 12px; background:linear-gradient(145deg,#fff7eb 0%,#f8e9d9 50%,#f4dfd5 100%); clip-path:polygon(0 0,50% 50%,100% 0,100% 100%,0 100%); }
+#letter .envelope-pocket:before,#letter .envelope-pocket:after { content:""; position:absolute; top:0; width:70%; height:100%; background:linear-gradient(145deg,rgba(255,255,255,.52),rgba(234,196,184,.25)); }
+#letter .envelope-pocket:before { left:0; clip-path:polygon(0 0,100% 58%,0 100%); } #letter .envelope-pocket:after { right:0; clip-path:polygon(100% 0,0 58%,100% 100%); }
+#letter .envelope-flap { position:absolute; z-index:4; top:0; left:0; width:100%; height:62%; transform-origin:top center; clip-path:polygon(0 0,100% 0,50% 100%); background:linear-gradient(155deg,#fff8ed,#efd6cc); border-top:1px solid rgba(200,153,140,.7); backface-visibility:hidden; transition:transform .8s cubic-bezier(.22,.75,.22,1), z-index .01s .4s; }
+#letter .envelope-ribbon { position:absolute; z-index:3; left:calc(50% - 5px); top:0; bottom:0; width:10px; background:linear-gradient(90deg,#d995a0,#f7c7c7 50%,#d995a0); opacity:.9; }
+#letter .envelope-bow { position:absolute; z-index:5; left:50%; top:47%; width:68px; height:42px; transform:translate(-50%,-50%); }
+#letter .envelope-bow i { position:absolute; top:4px; width:31px; height:24px; border:5px solid #d88f9b; border-radius:90% 45% 75% 45%; background:rgba(255,226,226,.65); box-shadow:inset 0 0 0 2px #f8c9cc; }
+#letter .envelope-bow i:first-child { left:0; transform:rotate(28deg); } #letter .envelope-bow i:nth-child(2) { right:0; transform:scaleX(-1) rotate(28deg); }
+#letter .envelope-bow b { position:absolute; left:50%; top:12px; display:grid; place-items:center; width:21px; height:21px; transform:translateX(-50%); border-radius:50%; color:#fff8f4; background:#c67683; font:15px/1 var(--serif); box-shadow:0 2px 5px #a35b6866; }
+#letter .envelope-flower { position:absolute; z-index:5; color:#b87580; text-shadow:0 1px #fff; font-size:22px; } #letter .envelope-flower--left{left:18px;bottom:17px} #letter .envelope-flower--right{right:19px;bottom:17px;font-size:18px;color:#d09b79} #letter .envelope-sparkle{position:absolute;z-index:5;right:30px;top:32px;color:#fff;font-size:23px;text-shadow:0 0 9px #cf9d79}
+#letter .revealed-letter { position:absolute; z-index:1; top:10px; left:50%; width:min(88vw,360px); height:0; padding:0 16px; overflow:hidden; transform:translate(-50%,90px) scale(.86); transform-origin:center bottom; opacity:0; border:1px solid rgba(209,177,145,.78); border-radius:4px 7px 5px 6px; background:linear-gradient(135deg,#fff9e9,#fff4df 50%,#f9ead3); box-shadow:0 14px 30px rgba(101,62,54,.2),inset 0 0 30px rgba(211,170,126,.12); transition:height 1s cubic-bezier(.22,.75,.22,1), transform 1.1s cubic-bezier(.2,.8,.2,1),opacity .5s ease; }
+#letter .revealed-letter:before { content:""; position:absolute; inset:7px; border:1px solid rgba(193,153,119,.22); pointer-events:none; }
+#letter .revealed-letter__inner { position:relative; z-index:1; max-height:100%; overflow:auto; padding:12px 5px 16px; opacity:0; transition:opacity .6s ease .7s; scrollbar-width:thin; scrollbar-color:#d9b6a8 transparent; }
+#letter .revealed-letter .letter-mark { position:relative;right:auto;top:auto;display:grid;place-items:center; width:32px;height:32px;margin:0 auto 6px;border:1px solid #d9b5a0;border-radius:50%;color:#a85e69;font:italic 20px var(--serif); }
+#letter .revealed-letter .letter-date { margin:0 0 10px; color:#9b7770; text-align:center; font:italic 13px var(--serif); }
+#letter .revealed-letter .letter-text { margin:0; color:#674c43; text-align:left; white-space:pre-wrap; overflow-wrap:anywhere; font:clamp(13px,3.6vw,16px)/1.68 var(--serif); }
+#letter .revealed-letter .letter-signoff { margin:12px 0 0; color:#89645c; text-align:right; font:italic 14px/1.45 var(--serif); } #letter .revealed-letter .letter-signoff strong{color:#a85e69;font-weight:600}
+#letter .letter-flower,#letter .letter-corner-heart {position:absolute;z-index:2;color:#ce9291;pointer-events:none} #letter .letter-flower--one{top:14px;left:15px;font-size:22px} #letter .letter-flower--two{right:16px;bottom:12px;color:#d4aa80;font-size:22px} #letter .letter-corner-heart{right:14px;top:13px;color:#c57f89;font-size:13px}
+#letter .envelope-open-button { position:relative;z-index:3; width:min(100%,300px); min-height:52px; margin:9px auto 0; padding:13px 18px; border:1px solid rgba(255,255,255,.9); border-radius:999px; color:#fffaf8; background:linear-gradient(110deg,#dc8f9e,#c66e85 58%,#dc8f9e); box-shadow:0 8px 24px rgba(184,91,117,.35),0 0 24px rgba(233,165,180,.38); font:600 15px/1.2 var(--sans); letter-spacing:.01em; animation:envelope-button-glow 2.3s ease-in-out infinite alternate; touch-action:manipulation; }
+#letter .envelope-hint { margin:8px 0 0;color:#9e7880;font:italic 12px var(--serif); transition:opacity .4s ease; }
+#letter .envelope-experience.is-opening .envelope-flap { transform:rotateX(180deg); z-index:0; }
+#letter .envelope-experience.is-rising .revealed-letter { height:clamp(180px,27vh,250px); opacity:1; transform:translate(-50%,-20px) scale(.94); }
+#letter .envelope-experience.is-unfolded .envelope-scene { height:min(64svh,600px); }
+#letter .envelope-experience.is-unfolded .revealed-letter { z-index:4;height:min(58svh,520px);min-height:340px;top:0;padding:12px 18px;transform:translate(-50%,0) scale(1);opacity:1; }
+#letter .envelope-experience.is-unfolded .revealed-letter__inner { opacity:1; }
+#letter .envelope-experience.is-unfolded .envelope { transform:translateX(-50%) scale(.78);transform-origin:center bottom; }
+#letter .envelope-experience.is-unfolded .envelope-intro { position:absolute;top:0;opacity:0;transform:translateY(-12px);pointer-events:none; }
+#letter .envelope-experience.is-opening .envelope-open-button,#letter .envelope-experience.is-opening .envelope-hint {opacity:0;pointer-events:none;}
+#letter .envelope-experience.is-unfolded .envelope-open-button {display:none}
+#letter .envelope-experience.is-unfolded .envelope-hint {opacity:0}
+@keyframes romantic-drift { from{transform:translate3d(0,-5px,0) rotate(-8deg);filter:drop-shadow(0 0 4px #fff)} to{transform:translate3d(9px,17px,0) rotate(15deg);filter:drop-shadow(0 0 9px #fff)} }
+@keyframes envelope-button-glow { to{box-shadow:0 10px 29px rgba(184,91,117,.48),0 0 30px rgba(233,165,180,.55);transform:translateY(-2px)} }
+@media(max-width:430px){#letter .envelope-experience{min-height:clamp(380px,calc(100svh - 220px),500px);padding:12px 10px 8px}#letter .envelope-intro h2{font-size:clamp(2.2rem,10vw,3rem)}#letter .envelope-scene{width:100%;height:clamp(190px,31vh,250px);margin:6px auto}#letter .envelope{width:min(82vw,310px);height:clamp(140px,43vw,185px)}#letter .envelope-experience.is-unfolded .envelope-scene{height:min(63svh,540px)}#letter .envelope-experience.is-unfolded .revealed-letter{width:min(91vw,360px);height:min(58svh,500px);min-height:320px;padding:9px 14px}#letter .revealed-letter__inner{padding-top:8px}#letter .revealed-letter .letter-text{font-size:clamp(12px,3.55vw,15px);line-height:1.55}#letter .romantic-petals i:nth-child(6){display:none}}
+@media(prefers-reduced-motion:reduce){#letter .romantic-petals i,#letter .envelope-open-button{animation:none}#letter .envelope-flap,#letter .revealed-letter,#letter .envelope-experience *{transition-duration:.01ms}}
+
 #final .final-photo .memory-fallback {
   position: absolute;
   inset: 0;
