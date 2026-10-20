@@ -1428,6 +1428,27 @@ section#creatorReveal .screen-nav {
 @media(max-width:430px){#letter .envelope-experience{min-height:clamp(380px,calc(100svh - 220px),500px);padding:12px 10px 8px}#letter .envelope-intro h2{font-size:clamp(2.2rem,10vw,3rem)}#letter .envelope-scene{width:100%;height:clamp(190px,31vh,250px);margin:6px auto}#letter .envelope{width:min(82vw,310px);height:clamp(140px,43vw,185px)}#letter .envelope-experience.is-unfolded .envelope-scene{height:min(63svh,540px)}#letter .envelope-experience.is-unfolded .revealed-letter{width:min(91vw,360px);height:min(58svh,500px);min-height:320px;padding:9px 14px}#letter .revealed-letter__inner{padding-top:8px}#letter .revealed-letter .letter-text{font-size:clamp(12px,3.55vw,15px);line-height:1.55}#letter .romantic-petals i:nth-child(6){display:none}}
 @media(prefers-reduced-motion:reduce){#letter .romantic-petals i,#letter .envelope-open-button{animation:none}#letter .envelope-flap,#letter .revealed-letter,#letter .envelope-experience *{transition-duration:.01ms}}
 
+/* Screen 07 bilingual card */
+#letter .revealed-letter { perspective:1200px; padding:0; }
+#letter .letter-flip-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .85s cubic-bezier(.2,.72,.2,1); }
+#letter .revealed-letter.is-tamil .letter-flip-inner { transform:rotateY(180deg); }
+#letter .letter-face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+#letter .letter-face--tamil { transform:rotateY(180deg); }
+#letter .letter-face .revealed-letter__inner { height:100%; overflow-y:auto; padding:16px 18px 20px; }
+#letter .letter-face--tamil .revealed-letter__inner { scrollbar-width:thin; }
+#letter .letter-text--tamil { color:#5f3d43!important; text-align:left!important; white-space:pre-wrap!important; overflow-wrap:anywhere; font:clamp(15px,4.15vw,18px)/1.8 'Noto Serif Tamil','Latha',serif!important; letter-spacing:.005em; }
+#letter .language-button { display:block; margin:16px auto 2px; border:1px solid rgba(168,94,105,.42); border-radius:999px; color:#8e4d62; background:linear-gradient(135deg,#fffaf4,#f9e8e5); box-shadow:0 5px 16px rgba(120,70,83,.12); cursor:pointer; font:600 13px/1.2 var(--sans); transition:transform .25s ease,box-shadow .25s ease,opacity .35s ease; }
+#letter .language-button:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(120,70,83,.2); }
+#letter .tamil-button { padding:11px 19px; }
+#letter .tamil-button[hidden] { display:none; }
+#letter .english-button { padding:8px 17px; font-size:12px; }
+#letter .tamil-button:not([hidden]) { animation:language-button-reveal .65s both; }
+@keyframes language-button-reveal { from{opacity:0;transform:translateY(9px)} to{opacity:1;transform:translateY(0)} }
+@media(max-width:430px) {
+  #letter .letter-face .revealed-letter__inner { padding:12px 13px 16px; }
+  #letter .letter-text--tamil { font-size:clamp(15px,4.15vw,17px)!important; line-height:1.75!important; }
+}
+
 #final .final-photo .memory-fallback {
   position: absolute;
   inset: 0;

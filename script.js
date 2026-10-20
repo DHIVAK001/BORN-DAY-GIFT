@@ -1,5 +1,24 @@
-// PASTE YOUR COMPLETE TAMIL LETTER BELOW when it is provided. Keep the text inside these backticks.
+// Screen 07 letter card content.
 const birthdayLetter = `SOWBHAGYALAKSHMI,\n\nI hope this birthday brings you the same warmth and happiness that you bring to the people around you. Your kindness, your creativity, and the way you make every moment brighter are gifts in themselves.\n\nThank you for being wonderfully, unmistakably you. Here is to another year of beautiful beginnings, brave dreams, and memories we have not made yet.`;
+const tamilBirthdayLetter = `இது உனக்கான வரிகள்...
+
+இதுவரை தெரிந்துகொண்டது சிலதுதான்; இன்னும் உள்ளது உன் வாழ்வில் ஏராளம்.
+
+பிறந்த தினம் என்றும் சிறப்பான ஒன்றுதான். புதிய உடை, நாம் அறிந்தவர்கள் கூறும் வாழ்த்துகள் — இதுபோல.
+
+வயதுதானே கூடுகிறது; நாம் எப்போதும் நாம்தான்... சிறு பிள்ளையைப் போல.
+
+உன் வாழ்வில் நான் கண்டது ஏராளம்; அதில் துக்கம், துயரம், அழுகை, ஆனந்தம்.
+
+உன்னிடம் பிடித்தது என்றால், கேள்விகள் மட்டுமே என்னிடம்!
+
+அழகை ரசிக்கப் பொருள் அழகாக இருந்தால் போதும்தானே. அதுபோலதான், அன்பைக் கொடுக்க மனம் இருந்தால் போதும்.
+
+இருக்கும் வரை கொடு அன்பை; வாழும்  வரை  வாங்கிக்கொள்கிறேன்.
+
+“தீர்ந்துபோய்விட்டது” எனச் சொல்ல, அன்பு என்ன அடமானம் வைக்கும் பொருளா! என்ன ?
+
+மழைக்காலத்தில் உணவு சேமிக்கும் சிறு எறும்பைப் போல, நானும் சேர்த்தேன் அன்பை அளவு அளவாக, உன் பிறந்தநாளுக்காக...`;
 const password = 'sowbhagyalakshmi';
 const heartLoader = document.querySelector('#heartLoader');
 const gate = document.querySelector('#passwordGate');
@@ -31,6 +50,10 @@ const finalPhotoNext = document.querySelector('#finalPhotoNext');
 const finalPhotoThumbs = [...document.querySelectorAll('#finalPhotoGrid [data-photo-index]')];
 const revealButton = document.querySelector('#revealButton');
 const letterText = document.querySelector('#letterText');
+const tamilLetterText = document.querySelector('#tamilLetterText');
+const tamilButton = document.querySelector('#tamilButton');
+const englishButton = document.querySelector('#englishButton');
+const revealedLetter = document.querySelector('#revealedLetter');
 const envelopeExperience = document.querySelector('#envelopeExperience');
 const envelopeOpenButton = document.querySelector('#envelopeOpenButton');
 const scratchCard = document.querySelector('#scratchCard');
@@ -262,6 +285,15 @@ envelopeOpenButton.addEventListener('click', () => {
   }, 2550));
 });
 
+tamilButton.addEventListener('click', () => {
+  revealedLetter.classList.add('is-tamil');
+  playRevealSound('sparkle');
+});
+englishButton.addEventListener('click', () => {
+  revealedLetter.classList.remove('is-tamil');
+  playRevealSound('sparkle');
+});
+
 function celebrateScratch() {
   if (scratchRevealed) return;
   scratchRevealed = true;
@@ -380,6 +412,7 @@ function setupScratchCard() {
 function typeLetter() {
   const target = document.querySelector('#letterText');
   if (target.dataset.typed) {
+    if (target.dataset.complete === 'true') tamilButton.hidden = false;
     resumeBackgroundMusic();
     return;
   }
@@ -399,6 +432,9 @@ function typeLetter() {
       typewriterSound.pause();
       typewriterSound.currentTime = 0;
       isTypingLetter = false;
+      target.dataset.complete = 'true';
+      tamilLetterText.textContent = tamilBirthdayLetter;
+      tamilButton.hidden = false;
       if (screenIndex === 6) resumeBackgroundMusic();
     }
   };
@@ -789,7 +825,11 @@ function resetBirthdayExperience() {
 
   isTypingLetter = false;
   delete letterText.dataset.typed;
+  delete letterText.dataset.complete;
   letterText.textContent = '';
+  tamilLetterText.textContent = '';
+  tamilButton.hidden = true;
+  revealedLetter.classList.remove('is-tamil');
   revealButton.hidden = false;
   delete revealButton.dataset.attempts;
   revealButton.innerHTML = 'Reveal it <span>&#10024;</span>';
