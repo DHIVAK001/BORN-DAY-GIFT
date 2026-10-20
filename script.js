@@ -56,6 +56,12 @@ const englishButton = document.querySelector('#englishButton');
 const revealedLetter = document.querySelector('#revealedLetter');
 const envelopeExperience = document.querySelector('#envelopeExperience');
 const envelopeOpenButton = document.querySelector('#envelopeOpenButton');
+const friendshipFlipCard = document.querySelector('#friendshipFlipCard');
+const friendshipEnglishFace = document.querySelector('#friendshipEnglishFace');
+const friendshipTamilFace = document.querySelector('#friendshipTamilFace');
+const artistFlipCard = document.querySelector('#artistFlipCard');
+const artistEnglishFace = document.querySelector('#artistEnglishFace');
+const artistTamilFace = document.querySelector('#artistTamilFace');
 const scratchCard = document.querySelector('#scratchCard');
 const scratchCanvas = document.querySelector('#scratchCanvas');
 const scratchAgeAnswer = document.querySelector('#scratchAgeAnswer');
@@ -283,6 +289,28 @@ envelopeOpenButton.addEventListener('click', () => {
     if (!envelopeExperience.classList.contains('is-unfolded')) return;
     typeLetter();
   }, 2550));
+});
+
+friendshipFlipCard.addEventListener('click', (event) => {
+  const flipButton = event.target.closest('[data-friendship-flip]');
+  if (!flipButton) return;
+  const showingTamil = flipButton.dataset.friendshipFlip === 'tamil';
+  friendshipFlipCard.classList.toggle('is-tamil', showingTamil);
+  friendshipEnglishFace.setAttribute('aria-hidden', String(showingTamil));
+  friendshipEnglishFace.inert = showingTamil;
+  friendshipTamilFace.setAttribute('aria-hidden', String(!showingTamil));
+  friendshipTamilFace.inert = !showingTamil;
+});
+
+artistFlipCard.addEventListener('click', (event) => {
+  const flipButton = event.target.closest('[data-artist-flip]');
+  if (!flipButton) return;
+  const showingTamil = flipButton.dataset.artistFlip === 'tamil';
+  artistFlipCard.classList.toggle('is-tamil', showingTamil);
+  artistEnglishFace.setAttribute('aria-hidden', String(showingTamil));
+  artistEnglishFace.inert = showingTamil;
+  artistTamilFace.setAttribute('aria-hidden', String(!showingTamil));
+  artistTamilFace.inert = !showingTamil;
 });
 
 tamilButton.addEventListener('click', () => {

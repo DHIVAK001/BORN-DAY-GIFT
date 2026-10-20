@@ -1433,9 +1433,12 @@ section#creatorReveal .screen-nav {
 #letter .letter-flip-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .85s cubic-bezier(.2,.72,.2,1); }
 #letter .revealed-letter.is-tamil .letter-flip-inner { transform:rotateY(180deg); }
 #letter .letter-face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+#letter .letter-face--english { pointer-events:auto; }
 #letter .letter-face--tamil { transform:rotateY(180deg); }
+#letter .revealed-letter.is-tamil .letter-face--english { pointer-events:none; }
+#letter .revealed-letter.is-tamil .letter-face--tamil { pointer-events:auto; }
 #letter .letter-face .revealed-letter__inner { height:100%; overflow-y:auto; padding:16px 18px 20px; }
-#letter .letter-face--tamil .revealed-letter__inner { scrollbar-width:thin; }
+#letter .letter-face--tamil .revealed-letter__inner { min-height:0; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior-y:contain; scrollbar-width:thin; }
 #letter .letter-text--tamil { color:#5f3d43!important; text-align:left!important; white-space:pre-wrap!important; overflow-wrap:anywhere; font:clamp(15px,4.15vw,18px)/1.8 'Noto Serif Tamil','Latha',serif!important; letter-spacing:.005em; }
 #letter .language-button { display:block; margin:16px auto 2px; border:1px solid rgba(168,94,105,.42); border-radius:999px; color:#8e4d62; background:linear-gradient(135deg,#fffaf4,#f9e8e5); box-shadow:0 5px 16px rgba(120,70,83,.12); cursor:pointer; font:600 13px/1.2 var(--sans); transition:transform .25s ease,box-shadow .25s ease,opacity .35s ease; }
 #letter .language-button:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(120,70,83,.2); }
@@ -1447,6 +1450,53 @@ section#creatorReveal .screen-nav {
 @media(max-width:430px) {
   #letter .letter-face .revealed-letter__inner { padding:12px 13px 16px; }
   #letter .letter-text--tamil { font-size:clamp(15px,4.15vw,17px)!important; line-height:1.75!important; }
+}
+
+/* Friendship Tamil flip card, scoped to Screen 6 */
+#friendship .friendship-card-shell { width:min(100%,900px); max-width:900px; margin:auto; flex-shrink:0; perspective:1400px; }
+#friendship .friendship-flip-card { position:relative; width:100%; height:min(62svh,520px); min-height:380px; overflow:hidden; border:1px solid rgba(209,177,145,.78); border-radius:6px; background:linear-gradient(135deg,#fff9e9,#fff4df 50%,#f9ead3); box-shadow:0 14px 30px rgba(101,62,54,.2),inset 0 0 30px rgba(211,170,126,.12); }
+#friendship .friendship-flip-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .85s cubic-bezier(.2,.72,.2,1); }
+#friendship .friendship-flip-card.is-tamil .friendship-flip-inner { transform:rotateY(180deg); }
+#friendship .friendship-face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+#friendship .friendship-face--english { pointer-events:auto; }
+#friendship .friendship-face--tamil { transform:rotateY(180deg); pointer-events:none; }
+#friendship .friendship-flip-card.is-tamil .friendship-face--english { pointer-events:none; }
+#friendship .friendship-flip-card.is-tamil .friendship-face--tamil { pointer-events:auto; }
+#friendship .friendship-original { width:100%; max-width:none; height:100%; min-height:0; margin:auto; padding:0; overflow-y:auto; align-content:center; }
+#friendship .friendship-original h2 { margin-top:0; }
+#friendship .friendship-language-button { display:block; margin:20px auto 0; padding:10px 18px; border:1px solid rgba(168,94,105,.42); border-radius:999px; color:#8e4d62; background:linear-gradient(135deg,#fffaf4,#f9e8e5); box-shadow:0 5px 16px rgba(120,70,83,.12); cursor:pointer; font:600 13px/1.2 var(--sans); transition:transform .25s ease,box-shadow .25s ease; }
+#friendship .friendship-language-button:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(120,70,83,.2); }
+#friendship .friendship-tamil-inner { position:relative; z-index:1; width:100%; height:100%; min-height:0; padding:22px clamp(18px,4vw,34px) 18px; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior-y:contain; scrollbar-width:thin; scrollbar-color:#d9b6a8 transparent; }
+#friendship .friendship-tamil-text { margin:0; color:#5f3d43; white-space:pre-line; overflow-wrap:anywhere; font:clamp(15px,4.15vw,18px)/1.8 'Noto Serif Tamil','Latha',serif; letter-spacing:.005em; }
+#friendship .friendship-english-button { margin:16px auto 3px; padding:8px 17px; font-size:12px; }
+@media(max-width:699px) {
+  #friendship .friendship-flip-card { height:min(62svh,500px); min-height:370px; }
+  #friendship .friendship-original { grid-template-columns:1fr; }
+  #friendship .friendship-language-button { margin-top:12px; padding:9px 15px; }
+  #friendship .friendship-tamil-inner { padding:14px 15px 14px; }
+  #friendship .friendship-tamil-text { font-size:clamp(15px,4.15vw,17px); line-height:1.75; }
+}
+
+/* Artist Tamil flip card, scoped to Screen 6 */
+#artist .artist-flip-shell { width:min(100%,900px); max-width:900px; margin:auto; flex-shrink:0; perspective:1400px; z-index:1; }
+#artist .artist-flip-card { position:relative; width:100%; height:min(68svh,560px); min-height:390px; }
+#artist .artist-flip-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .85s cubic-bezier(.2,.72,.2,1); }
+#artist .artist-flip-card.is-tamil .artist-flip-inner { transform:rotateY(180deg); }
+#artist .artist-flip-face { position:absolute; inset:0; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+#artist .artist-flip-face--english { display:flex; align-items:center; justify-content:center; pointer-events:auto; }
+#artist .artist-flip-face--english .artist-content { margin:auto; }
+#artist .artist-flip-face--tamil { transform:rotateY(180deg); pointer-events:none; border:1px solid rgba(209,177,145,.78); border-radius:6px; background:linear-gradient(135deg,#fff9e9,#fff4df 50%,#f9ead3); box-shadow:0 14px 30px rgba(101,62,54,.2),inset 0 0 30px rgba(211,170,126,.12); }
+#artist .artist-flip-card.is-tamil .artist-flip-face--english { pointer-events:none; }
+#artist .artist-flip-card.is-tamil .artist-flip-face--tamil { pointer-events:auto; }
+#artist .artist-tamil-inner { position:relative; z-index:1; width:100%; height:100%; min-height:0; padding:22px clamp(18px,4vw,34px) 18px; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior-y:contain; scrollbar-width:thin; scrollbar-color:#d9b6a8 transparent; }
+#artist .artist-tamil-text { margin:0; color:#5f3d43!important; white-space:pre-line; overflow-wrap:anywhere; font:clamp(15px,4.15vw,18px)/1.8 'Noto Serif Tamil','Latha',serif; letter-spacing:.005em; }
+#artist .artist-language-button { display:block; margin:19px auto 2px; padding:10px 18px; border:1px solid rgba(168,94,105,.42); border-radius:999px; color:#8e4d62; background:linear-gradient(135deg,#fffaf4,#f9e8e5); box-shadow:0 5px 16px rgba(120,70,83,.12); cursor:pointer; font:600 13px/1.2 var(--sans); transition:transform .25s ease,box-shadow .25s ease; }
+#artist .artist-language-button:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(120,70,83,.2); }
+#artist .artist-english-button { margin-top:16px; padding:8px 17px; font-size:12px; }
+@media(max-width:699px) {
+  #artist .artist-flip-card { height:min(68svh,540px); min-height:370px; }
+  #artist .artist-tamil-inner { padding:14px 15px 14px; }
+  #artist .artist-tamil-text { font-size:clamp(15px,4.15vw,17px); line-height:1.75; }
 }
 
 #final .final-photo .memory-fallback {
