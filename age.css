@@ -22,3 +22,4 @@
 @keyframes brush-lift-small{50%{transform:translateY(-7px) scale(.8) rotate(-34deg)}100%{transform:translateY(0) scale(.8) rotate(-34deg)}}
 .scratch-card{overflow:visible}
 .scratch-dialogues{position:relative;z-index:5}
+.brush-choice{position:relative}.brush-choice.is-selected:after{content:'';position:absolute;top:5px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 5px rgba(232,201,151,.65)}

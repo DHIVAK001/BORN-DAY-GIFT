@@ -393,7 +393,7 @@ function scratchAt(event) {
   const y = event.clientY - bounds.top;
   brushCursor.style.left = `${x}px`;
   brushCursor.style.top = `${y}px`;
-  scratchContext.lineWidth = 48;
+  scratchContext.lineWidth = selectedBrushWidths[selectedBrush];
   scratchContext.lineCap = 'round';
   scratchContext.lineJoin = 'round';
   scratchContext.beginPath();
@@ -406,21 +406,46 @@ function scratchAt(event) {
   }
   scratchContext.stroke();
   scratchContext.beginPath();
-  scratchContext.arc(x, y, 24, 0, Math.PI * 2);
+  scratchContext.arc(x, y, selectedBrushWidths[selectedBrush] / 2, 0, Math.PI * 2);
   scratchContext.fill();
   lastScratchPoint = { x, y };
   updateScratchProgress();
 }
 
+const selectedBrushWidths = { blending: 30, lip: 20, blush: 34, highlighter: 26 };
+let brushSelectionCount = 0;
+
+function revealBrushSelection(brush) {
+  if (!scratchContext || scratchRevealed) return;
+  const bounds = scratchCanvas.getBoundingClientRect();
+  const width = selectedBrushWidths[brush];
+  const height = Math.max(12, width * 0.62);
+  const usableWidth = Math.max(width, bounds.width - width * 2);
+  const steps = 8;
+  const x = width + ((brushSelectionCount * 3) % steps) / (steps - 1) * usableWidth;
+  const y = bounds.height * (brushSelectionCount % 2 ? 0.67 : 0.34);
+  brushSelectionCount += 1;
+  scratchContext.beginPath();
+  scratchContext.ellipse(x, y, width / 2, height / 2, -0.18, 0, Math.PI * 2);
+  scratchContext.fill();
+  updateScratchProgress();
+}
+
 function setupScratchCard() {
   brushChoices.forEach((choice) => choice.addEventListener('click', () => {
+    if (scratchRevealed) return;
     selectedBrush = choice.dataset.brush;
-    brushChoices.forEach((item) => item.classList.toggle('is-selected', item === choice));
+    brushChoices.forEach((item) => {
+      const selected = item === choice;
+      item.classList.toggle('is-selected', selected);
+      item.setAttribute('aria-pressed', String(selected));
+    });
     scratchCard.dataset.brush = selectedBrush;
     brushCursor.className = `brush-cursor brush-cursor--${selectedBrush}`;
     brushCursor.hidden = false;
     brushMessage.hidden = false;
     scratchCanvas.setAttribute('aria-label', `${choice.textContent.trim()} selected. Scratch to reveal the hidden age`);
+    revealBrushSelection(selectedBrush);
   }));
   scratchCanvas.addEventListener('pointerdown', (event) => {
     if (!selectedBrush || scratchRevealed) return;
@@ -848,7 +873,11 @@ function resetBirthdayExperience() {
   scratchNext.disabled = true;
   brushMessage.hidden = true;
   brushCursor.hidden = true;
-  brushChoices.forEach((choice) => choice.classList.remove('is-selected'));
+  brushSelectionCount = 0;
+  brushChoices.forEach((choice) => {
+    choice.classList.remove('is-selected');
+    choice.setAttribute('aria-pressed', 'false');
+  });
   resizeScratchCard();
 
   isTypingLetter = false;
