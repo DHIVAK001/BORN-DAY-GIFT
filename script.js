@@ -86,9 +86,13 @@ const creatorFlyPreview = document.querySelector('#creatorFlyPreview');
 const creatorFeedback = document.querySelector('#creatorFeedback');
 const creatorRestart = document.querySelector('#creatorRestart');
 const birthdayRevealVideo = document.querySelector('#birthdayRevealVideo');
+const creatorTamilButton = document.querySelector('#creatorTamilButton');
+const creatorTamilStatus = document.querySelector('#creatorTamilStatus');
 const dhivakarImage = document.querySelector('#dhivakarImage');
 const creatorPhoto = document.querySelector('.creator-photo');
 const CREATOR_VIDEO_SOURCE = 'assets/video/dhivakar-trial.mp4';
+const CREATOR_TAMIL_VIDEO_SOURCE = 'assets/video/dhivakar-trail-tamil.mp4';
+let creatorTamilStarted = false;
 const ageValues = {
   years: document.querySelector('#ageYears'),
   days: document.querySelector('#ageDays'),
@@ -644,6 +648,12 @@ creatorRestart.addEventListener('click', () => {
   showScreen(0);
 });
 birthdayRevealVideo.addEventListener('ended', finishCreatorVideo);
+birthdayRevealVideo.addEventListener('playing', () => {
+  creatorTamilStatus.hidden = true;
+  creatorTamilStatus.textContent = '';
+  creatorVideo.classList.remove('has-tamil-action');
+});
+creatorTamilButton.addEventListener('click', startCreatorTamilVideo);
 dhivakarImage.addEventListener('load', () => creatorPhoto.classList.add('has-image'));
 dhivakarImage.addEventListener('error', () => {
   dhivakarImage.hidden = true;
@@ -877,21 +887,48 @@ function startCreatorVideo() {
       birthdayVideoWrap.hidden = false;
       birthdayRevealVideo.src = CREATOR_VIDEO_SOURCE;
       birthdayRevealVideo.currentTime = 0;
-      birthdayRevealVideo.play().catch(() => {});
+      birthdayRevealVideo.play().catch(() => {
+        birthdayRevealVideo.controls = true;
+        creatorVideo.classList.add('has-tamil-action');
+        creatorTamilStatus.textContent = 'Tap the video play control to start the video.';
+        creatorTamilStatus.hidden = false;
+      });
     }, 1800);
   }, 520);
 }
 
 function finishCreatorVideo() {
   if (creatorVideo.hidden) return;
-  creatorScreen.classList.remove('is-playing-video');
-  creatorScreen.classList.add('is-transitioning');
   birthdayRevealVideo.pause();
-  creatorAdvanceTimer = window.setTimeout(() => {
-    creatorVideo.hidden = true;
-    creatorScreen.classList.remove('is-transitioning');
-    showCreatorFinal();
-  }, 520);
+  if (!creatorTamilStarted) {
+    creatorTamilButton.hidden = false;
+    creatorVideo.classList.add('has-tamil-action');
+    return;
+  }
+  creatorTamilButton.hidden = true;
+  creatorVideo.classList.remove('has-tamil-action');
+  creatorVideo.classList.add('has-tamil-message');
+  creatorTamilStatus.textContent = '\u0ba8\u0ba9\u0bcd\u0bb1\u0bbf \u2764\ufe0f \u0b87\u0ba8\u0bcd\u0ba4 \u0ba8\u0bbf\u0ba9\u0bc8\u0bb5\u0bc1 \u0b89\u0ba9\u0b95\u0bcd\u0b95\u0bbe\u0b95!';
+  creatorTamilStatus.hidden = false;
+}
+
+function startCreatorTamilVideo() {
+  if (creatorTamilStarted) return;
+  creatorTamilStarted = true;
+  creatorTamilButton.hidden = true;
+  creatorTamilStatus.hidden = true;
+  creatorTamilStatus.textContent = '';
+  birthdayRevealVideo.pause();
+  birthdayRevealVideo.removeAttribute('src');
+  birthdayRevealVideo.load();
+  birthdayRevealVideo.controls = false;
+  birthdayRevealVideo.src = CREATOR_TAMIL_VIDEO_SOURCE;
+  birthdayRevealVideo.currentTime = 0;
+  birthdayRevealVideo.play().catch(() => {
+    birthdayRevealVideo.controls = true;
+    creatorTamilStatus.textContent = 'Tap the video play control to watch the Tamil video.';
+    creatorTamilStatus.hidden = false;
+  });
 }
 
 function showCreatorFinal() {
@@ -907,6 +944,12 @@ function resetCreatorReveal() {
   birthdayRevealVideo.currentTime = 0;
   birthdayRevealVideo.removeAttribute('src');
   birthdayRevealVideo.load();
+  birthdayRevealVideo.controls = false;
+  creatorTamilStarted = false;
+  creatorTamilButton.hidden = true;
+  creatorTamilStatus.hidden = true;
+  creatorTamilStatus.textContent = '';
+  creatorVideo.classList.remove('has-tamil-action', 'has-tamil-message');
   creatorProgress = 0;
   creatorWrongGuesses = 0;
   creatorIntro.hidden = false;
@@ -1255,41 +1298,3 @@ if (
 })();
 
 /* VIDEO NOTE → PLAY VIDEO */
-
-if (creatorVideoNote && birthdayVideoWrap && birthdayRevealVideo) {
-
-    creatorVideoNote.addEventListener('click', function () {
-
-        /* Hide the note */
-        creatorVideoNote.hidden = true;
-
-        /* Show video */
-        birthdayVideoWrap.hidden = false;
-
-        /* Start playing */
-        birthdayRevealVideo.play();
-
-    });
-
-}
-
-
-/* WHEN VIDEO ENDS → SHOW FINAL CREATOR SCREEN */
-
-if (birthdayRevealVideo && creatorVideo && creatorFinal) {
-
-    birthdayRevealVideo.addEventListener('ended', function () {
-
-        /* Stop and hide video */
-        birthdayRevealVideo.pause();
-        birthdayRevealVideo.currentTime = 0;
-
-        /* Hide video stage */
-        creatorVideo.hidden = true;
-
-        /* Show final stage */
-        creatorFinal.hidden = false;
-
-    });
-
-}
