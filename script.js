@@ -325,6 +325,11 @@ englishButton.addEventListener('click', () => {
 function celebrateScratch() {
   if (scratchRevealed) return;
   scratchRevealed = true;
+  window.clearTimeout(scratchAnimationFinishTimer);
+  window.cancelAnimationFrame(scratchAnimationFrame);
+  scratchAnimationStartedAt = 0;
+  scratchAnimationFrame = 0;
+  scratchAnimationFinishTimer = 0;
   scratchContext.clearRect(0, 0, scratchCanvas.width, scratchCanvas.height);
   scratchPercent.textContent = '100%';
   scratchAgeAnswer.innerHTML = '21 &#127874;';
@@ -413,22 +418,89 @@ function scratchAt(event) {
 }
 
 const selectedBrushWidths = { blending: 30, lip: 20, blush: 34, highlighter: 26 };
-let brushSelectionCount = 0;
+let scratchAnimationStartedAt = 0;
+let scratchAnimationFrame = 0;
+let scratchAnimationFinishTimer = 0;
+let scratchAnimationPoints = [];
+let scratchAnimationLastPoint = 0;
 
-function revealBrushSelection(brush) {
-  if (!scratchContext || scratchRevealed) return;
+function buildScratchAnimationPath(width, height) {
+  const points = [];
+  const padding = 24;
+  const pitch = Math.max(9, selectedBrushWidths.lip * 0.52);
+  const addSweep = (horizontal) => {
+    const span = horizontal ? width : height;
+    const depth = horizontal ? height : width;
+    const rows = Math.ceil(depth / pitch) + 2;
+    for (let row = 0; row < rows; row += 1) {
+      const cross = -padding + row * pitch;
+      const forward = row % 2 === 0;
+      const start = forward ? -padding : span + padding;
+      const end = forward ? span + padding : -padding;
+      const length = Math.ceil(Math.abs(end - start) / 9);
+      for (let step = 0; step <= length; step += 1) {
+        const ratio = step / length;
+        const along = start + (end - start) * ratio;
+        const ripple = Math.sin(ratio * Math.PI * 7 + row * 1.7) * Math.min(4, pitch * 0.18);
+        points.push(horizontal ? { x: along, y: cross + ripple } : { x: cross + ripple, y: along });
+      }
+    }
+  };
+  addSweep(true);
+  addSweep(false);
+  return points;
+}
+
+function finishScratchAnimation() {
+  if (scratchRevealed) return;
+  window.clearTimeout(scratchAnimationFinishTimer);
+  window.cancelAnimationFrame(scratchAnimationFrame);
+  scratchAnimationFinishTimer = 0;
+  scratchAnimationFrame = 0;
+  scratchAnimationLastPoint = scratchAnimationPoints.length;
+  scratchContext.clearRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+  scratchPercent.textContent = '100%';
+  celebrateScratch();
+}
+
+function animateScratchReveal(timestamp) {
+  if (scratchRevealed || !scratchAnimationStartedAt) return;
+  const elapsed = timestamp - scratchAnimationStartedAt;
+  const progress = Math.min(1, elapsed / 5000);
+  const targetPoint = Math.min(scratchAnimationPoints.length, Math.floor(progress * scratchAnimationPoints.length));
+  if (targetPoint > scratchAnimationLastPoint) {
+    const first = scratchAnimationPoints[Math.max(0, scratchAnimationLastPoint - 1)];
+    const last = scratchAnimationPoints[targetPoint - 1];
+    scratchContext.lineWidth = selectedBrushWidths[selectedBrush] || selectedBrushWidths.blending;
+    scratchContext.lineCap = 'round';
+    scratchContext.lineJoin = 'round';
+    scratchContext.beginPath();
+    if (first) scratchContext.moveTo(first.x, first.y);
+    else scratchContext.moveTo(last.x, last.y);
+    for (let index = Math.max(0, scratchAnimationLastPoint); index < targetPoint; index += 1) {
+      const point = scratchAnimationPoints[index];
+      scratchContext.lineTo(point.x, point.y);
+    }
+    scratchContext.stroke();
+    brushCursor.style.left = `${last.x}px`;
+    brushCursor.style.top = `${last.y}px`;
+    scratchAnimationLastPoint = targetPoint;
+    scratchPercent.textContent = `${Math.floor(progress * 100)}%`;
+  }
+  if (progress >= 1) finishScratchAnimation();
+  else scratchAnimationFrame = window.requestAnimationFrame(animateScratchReveal);
+}
+
+function startScratchAnimation() {
+  if (scratchAnimationStartedAt || scratchRevealed) return;
+  isScratching = false;
+  lastScratchPoint = null;
   const bounds = scratchCanvas.getBoundingClientRect();
-  const width = selectedBrushWidths[brush];
-  const height = Math.max(12, width * 0.62);
-  const usableWidth = Math.max(width, bounds.width - width * 2);
-  const steps = 8;
-  const x = width + ((brushSelectionCount * 3) % steps) / (steps - 1) * usableWidth;
-  const y = bounds.height * (brushSelectionCount % 2 ? 0.67 : 0.34);
-  brushSelectionCount += 1;
-  scratchContext.beginPath();
-  scratchContext.ellipse(x, y, width / 2, height / 2, -0.18, 0, Math.PI * 2);
-  scratchContext.fill();
-  updateScratchProgress();
+  scratchAnimationPoints = buildScratchAnimationPath(bounds.width, bounds.height);
+  scratchAnimationLastPoint = 0;
+  scratchAnimationStartedAt = performance.now();
+  scratchAnimationFrame = window.requestAnimationFrame(animateScratchReveal);
+  scratchAnimationFinishTimer = window.setTimeout(finishScratchAnimation, 5000);
 }
 
 function setupScratchCard() {
@@ -445,7 +517,7 @@ function setupScratchCard() {
     brushCursor.hidden = false;
     brushMessage.hidden = false;
     scratchCanvas.setAttribute('aria-label', `${choice.textContent.trim()} selected. Scratch to reveal the hidden age`);
-    revealBrushSelection(selectedBrush);
+    startScratchAnimation();
   }));
   scratchCanvas.addEventListener('pointerdown', (event) => {
     if (!selectedBrush || scratchRevealed) return;
@@ -873,7 +945,13 @@ function resetBirthdayExperience() {
   scratchNext.disabled = true;
   brushMessage.hidden = true;
   brushCursor.hidden = true;
-  brushSelectionCount = 0;
+  window.clearTimeout(scratchAnimationFinishTimer);
+  window.cancelAnimationFrame(scratchAnimationFrame);
+  scratchAnimationStartedAt = 0;
+  scratchAnimationFrame = 0;
+  scratchAnimationFinishTimer = 0;
+  scratchAnimationPoints = [];
+  scratchAnimationLastPoint = 0;
   brushChoices.forEach((choice) => {
     choice.classList.remove('is-selected');
     choice.setAttribute('aria-pressed', 'false');
